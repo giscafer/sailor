@@ -18,7 +18,7 @@ rm -rf gh-pages
 
 fis3 release gh-pages -c
 
-node ./upload2cdn.js $1
+# node ./upload2cdn.js $1
 
 git add gh-pages -f
 
@@ -26,7 +26,7 @@ git commit -m "更新 gh-pages"
 
 git push
 
-git subtree push --prefix gh-pages origin gh-pages
+git subtree push --prefix gh-pages origin gh-pages -f
 
 git commit -m 'rebuild pages' --allow-empty
 
