@@ -8,12 +8,12 @@
         "start": "fis3 server start --www ./public --port 8082 --no-daemon",
         "server": "fis3 server start --www ./public --port 8082 --no-daemon",
         "dev": "fis3 release -cwd ./public",
-        "gh-pages": "rm -rf gh-pages && fis3 release gh-pages -c",
+        "gh-pages": "rm -rf docs && fis3 release docs -c",
         "deploy-gh-pages": "git subtree push --prefix gh-pages origin gh-pages"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/fex-team/amis-editor-demo.git"
+        "url": "git+https://github.com/giscafer/amis-editor-demo.git"
     },
     "keywords": [
         "amis",
