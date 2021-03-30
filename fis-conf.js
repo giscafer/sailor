@@ -56,7 +56,7 @@ const packConfig = {
     'pkg/style.css': ['node_modules/*/**.css', '*.scss', '!/scss/*.scss', '/scss/*.scss', '!monaco-editor/**']
 };
 
-fis.get('project.ignore').push('public/**', 'gh-pages/**');
+fis.get('project.ignore').push('public/**', 'docs/**', 'gh-pages/**');
 
 // 配置只编译哪些文件。
 
@@ -101,14 +101,12 @@ fis.match('*.{jsx,tsx,ts}', {
             }
 
             // dynamic import 支持
-            contents = contents.replace(/return\s+(tslib_\d+)\.__importStar\(require\(('|")(.*?)\2\)\);/g, function (
-                _,
-                tslib,
-                quto,
-                value
-            ) {
-                return `return new Promise(function(resolve){require(['${value}'], function(ret) {resolve(${tslib}.__importStar(ret));})});`;
-            });
+            contents = contents.replace(
+                /return\s+(tslib_\d+)\.__importStar\(require\(('|")(.*?)\2\)\);/g,
+                function (_, tslib, quto, value) {
+                    return `return new Promise(function(resolve){require(['${value}'], function(ret) {resolve(${tslib}.__importStar(ret));})});`;
+                }
+            );
 
             return contents;
         }
@@ -185,7 +183,7 @@ fis.media('dev')
         packTo: null
     });
 
-const ghPages = fis.media('gh-pages');
+const ghPages = fis.media('docs');
 
 ghPages.match('/node_modules/(**)', {
     release: '/n/$1'
@@ -238,14 +236,12 @@ ghPages.match('{*.jsx,*.tsx,*.ts}', {
             }
 
             // dynamic import 支持
-            contents = contents.replace(/return\s+(tslib_\d+)\.__importStar\(require\(('|")(.*?)\2\)\);/g, function (
-                _,
-                tslib,
-                quto,
-                value
-            ) {
-                return `return new Promise(function(resolve){require(['${value}'], function(ret) {resolve(${tslib}.__importStar(ret));})});`;
-            });
+            contents = contents.replace(
+                /return\s+(tslib_\d+)\.__importStar\(require\(('|")(.*?)\2\)\);/g,
+                function (_, tslib, quto, value) {
+                    return `return new Promise(function(resolve){require(['${value}'], function(ret) {resolve(${tslib}.__importStar(ret));})});`;
+                }
+            );
 
             return contents;
         }
@@ -257,11 +253,11 @@ ghPages.match('{*.jsx,*.tsx,*.ts,*.js}', {
     }
 });
 ghPages.match('*', {
-    domain: 'https://bce.bdstatic.com/fex/amis-editor-gh-pages',
+    domain: '.',
     deploy: [
         fis.plugin('skip-packed'),
         fis.plugin('local-deliver', {
-            to: './gh-pages'
+            to: './docs'
         })
     ]
 });

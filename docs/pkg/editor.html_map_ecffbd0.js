@@ -280,7 +280,7 @@ amis.require.resourceMap({
       "pkg": "p4"
     },
     "39ea9ea": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/dist/index.min_726d55b.js",
+      "url": "./n/amis-editor/dist/index.min_726d55b.js",
       "type": "js",
       "deps": [
         "1356a1a",
@@ -288,7 +288,7 @@ amis.require.resourceMap({
       ]
     },
     "1356a1a": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react/dist/index_7566c64.js",
+      "url": "./n/amis-editor/node_modules/mobx-react/dist/index_7566c64.js",
       "type": "js",
       "deps": [
         "8a4420d",
@@ -296,7 +296,7 @@ amis.require.resourceMap({
       ]
     },
     "8a4420d": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react/dist/mobxreact.cjs.production.min_b1bab42.js",
+      "url": "./n/amis-editor/node_modules/mobx-react/dist/mobxreact.cjs.production.min_55f842e.js",
       "type": "js",
       "deps": [
         "6f79e44",
@@ -304,7 +304,7 @@ amis.require.resourceMap({
       ]
     },
     "6f79e44": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx/lib/index_70da50e.js",
+      "url": "./n/amis-editor/node_modules/mobx/lib/index_70da50e.js",
       "type": "js",
       "deps": [
         "4c32aa7",
@@ -312,15 +312,15 @@ amis.require.resourceMap({
       ]
     },
     "4c32aa7": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx/lib/mobx.min_25ec2ae.js",
+      "url": "./n/amis-editor/node_modules/mobx/lib/mobx.min_25ec2ae.js",
       "type": "js"
     },
     "366c09d": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx/lib/mobx_bb8d043.js",
+      "url": "./n/amis-editor/node_modules/mobx/lib/mobx_bb8d043.js",
       "type": "js"
     },
     "5a279ef": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/index_6b35664.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/index_6b35664.js",
       "type": "js",
       "deps": [
         "26c3304",
@@ -337,18 +337,18 @@ amis.require.resourceMap({
       ]
     },
     "26c3304": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/assertEnvironment_1c42507.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/assertEnvironment_1c42507.js",
       "type": "js",
       "deps": [
         "6f79e44"
       ]
     },
     "161c55d": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/utils/reactBatchedUpdates_4f17033.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/utils/reactBatchedUpdates_4f17033.js",
       "type": "js"
     },
     "7205d88": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/observerBatching_8f0ab66.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/observerBatching_8f0ab66.js",
       "type": "js",
       "deps": [
         "6f79e44",
@@ -356,15 +356,15 @@ amis.require.resourceMap({
       ]
     },
     "4a01fda": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/utils_3913aeb.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/utils_3913aeb.js",
       "type": "js"
     },
     "4e65aca": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/staticRendering_9fc042d.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/staticRendering_9fc042d.js",
       "type": "js"
     },
     "598281a": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/observer_9cc44ef.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/observer_9cc44ef.js",
       "type": "js",
       "deps": [
         "4e65aca",
@@ -372,7 +372,7 @@ amis.require.resourceMap({
       ]
     },
     "f1c4a15": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/useObserver_5403138.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/useObserver_5403138.js",
       "type": "js",
       "deps": [
         "6f79e44",
@@ -384,29 +384,29 @@ amis.require.resourceMap({
       ]
     },
     "b2e4547": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/printDebugValue_4d9597b.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/printDebugValue_4d9597b.js",
       "type": "js",
       "deps": [
         "6f79e44"
       ]
     },
     "494d7d6": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/reactionCleanupTracking_e79bbab.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/reactionCleanupTracking_e79bbab.js",
       "type": "js"
     },
     "3a466d1": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/useQueuedForceUpdate_b9b2e2a.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/useQueuedForceUpdate_b9b2e2a.js",
       "type": "js"
     },
     "d0a85c0": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/ObserverComponent_c903cd0.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/ObserverComponent_c903cd0.js",
       "type": "js",
       "deps": [
         "f1c4a15"
       ]
     },
     "9f8dfbb": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/useAsObservableSource_4b36ce9.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/useAsObservableSource_4b36ce9.js",
       "type": "js",
       "deps": [
         "6f79e44",
@@ -414,7 +414,7 @@ amis.require.resourceMap({
       ]
     },
     "7c6be09": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react-lite/lib/useLocalStore_5730eb9.js",
+      "url": "./n/amis-editor/node_modules/mobx-react-lite/lib/useLocalStore_5730eb9.js",
       "type": "js",
       "deps": [
         "6f79e44",
@@ -423,7 +423,7 @@ amis.require.resourceMap({
       ]
     },
     "5062ad9": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/amis-editor/node_modules/mobx-react/dist/mobxreact.cjs.development_f54bba9.js",
+      "url": "./n/amis-editor/node_modules/mobx-react/dist/mobxreact.cjs.development_f54bba9.js",
       "type": "js",
       "deps": [
         "6f79e44",
@@ -6039,29 +6039,29 @@ amis.require.resourceMap({
       "pkg": "p2"
     },
     "b582765": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/flv.js/dist/flv_f987c60.js",
+      "url": "./n/flv.js/dist/flv_f987c60.js",
       "type": "js"
     },
     "a3e49d7": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/hls.js/dist/hls_81f97eb.js",
+      "url": "./n/hls.js/dist/hls_81f97eb.js",
       "type": "js"
     }
   },
   "pkg": {
     "p5": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/pkg/rest_012813b.js",
+      "url": "./pkg/rest_163258c.js",
       "type": "js"
     },
     "p4": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/pkg/app_d03db16.js",
+      "url": "./pkg/app_d03db16.js",
       "type": "js"
     },
     "p1": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/pkg/rich-text_569ad1a.js",
+      "url": "./pkg/rich-text_569ad1a.js",
       "type": "js"
     },
     "p2": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/pkg/echarts_8c8071e.js",
+      "url": "./pkg/echarts_8c8071e.js",
       "type": "js"
     }
   }

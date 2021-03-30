@@ -5810,21 +5810,21 @@ amis.require.resourceMap({
       "pkg": "p2"
     },
     "b582765": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/flv.js/dist/flv_f987c60.js",
+      "url": "./n/flv.js/dist/flv_f987c60.js",
       "type": "js"
     },
     "a3e49d7": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/n/hls.js/dist/hls_81f97eb.js",
+      "url": "./n/hls.js/dist/hls_81f97eb.js",
       "type": "js"
     }
   },
   "pkg": {
     "p1": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/pkg/rich-text_569ad1a.js",
+      "url": "./pkg/rich-text_569ad1a.js",
       "type": "js"
     },
     "p2": {
-      "url": "https://bce.bdstatic.com/fex/amis-editor-gh-pages/pkg/echarts_8c8071e.js",
+      "url": "./pkg/echarts_8c8071e.js",
       "type": "js"
     }
   }
