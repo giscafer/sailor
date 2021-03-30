@@ -56,7 +56,7 @@ const packConfig = {
     'pkg/style.css': ['node_modules/*/**.css', '*.scss', '!/scss/*.scss', '/scss/*.scss', '!monaco-editor/**']
 };
 
-fis.get('project.ignore').push('public/**', 'docs/**', 'gh-pages/**');
+fis.get('project.ignore').push('public/**', 'gh-pages/**', 'gh-pages/**');
 
 // 配置只编译哪些文件。
 
@@ -183,7 +183,7 @@ fis.media('dev')
         packTo: null
     });
 
-const ghPages = fis.media('docs');
+const ghPages = fis.media('gh-pages');
 
 ghPages.match('/node_modules/(**)', {
     release: '/n/$1'
@@ -257,7 +257,7 @@ ghPages.match('*', {
     deploy: [
         fis.plugin('skip-packed'),
         fis.plugin('local-deliver', {
-            to: './docs'
+            to: './gh-pages'
         })
     ]
 });

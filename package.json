@@ -8,7 +8,7 @@
         "start": "fis3 server start --www ./public --port 8082 --no-daemon",
         "server": "fis3 server start --www ./public --port 8082 --no-daemon",
         "dev": "fis3 release -cwd ./public",
-        "gh-pages": "rm -rf docs && fis3 release docs -c",
+        "gh-pages": "rm -rf gh-pages && fis3 release gh-pages -c",
         "deploy-gh-pages": "git subtree push --prefix gh-pages origin gh-pages"
     },
     "repository": {
@@ -22,9 +22,9 @@
     "author": "fex",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/fex-team/amis-editor-demo/issues"
+        "url": "https://github.com/giscafer/amis-editor-demo/issues"
     },
-    "homepage": "https://github.com/fex-team/amis-editor-demo#readme",
+    "homepage": "https://github.com/giscafer/amis-editor-demo#readme",
     "dependencies": {
         "amis": "^1.1.5",
         "amis-editor": "2.0.11",
