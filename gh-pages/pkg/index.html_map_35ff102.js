@@ -183,13 +183,6 @@ amis.require.resourceMap({
       "type": "js",
       "pkg": "p2"
     },
-    "8586189": {
-      "type": "js",
-      "deps": [
-        "c3d9fbb"
-      ],
-      "pkg": "p4"
-    },
     "9010250": {
       "type": "js",
       "pkg": "p2"
@@ -207,228 +200,6 @@ amis.require.resourceMap({
         "e369a4b"
       ],
       "pkg": "p2"
-    },
-    "800eaff": {
-      "type": "js",
-      "pkg": "p5"
-    },
-    "8d0e5e4": {
-      "type": "js",
-      "deps": [
-        "4c5556c"
-      ],
-      "pkg": "p5"
-    },
-    "0d8fb78": {
-      "type": "js",
-      "pkg": "p5"
-    },
-    "bf6b35d": {
-      "type": "js",
-      "pkg": "p5"
-    },
-    "3b1184e": {
-      "type": "js",
-      "deps": [
-        "bf6b35d"
-      ],
-      "pkg": "p5"
-    },
-    "816c31c": {
-      "type": "js",
-      "deps": [
-        "0d8fb78",
-        "bf6b35d",
-        "3b1184e"
-      ],
-      "pkg": "p5"
-    },
-    "de955de": {
-      "type": "js",
-      "pkg": "p5"
-    },
-    "bef2b8d": {
-      "type": "js",
-      "deps": [
-        "39ea9ea"
-      ],
-      "pkg": "p5"
-    },
-    "218f7cb": {
-      "type": "js",
-      "deps": [
-        "39ea9ea",
-        "de955de",
-        "bef2b8d"
-      ],
-      "pkg": "p5"
-    },
-    "4c5556c": {
-      "type": "js",
-      "deps": [
-        "8586189",
-        "11207ed"
-      ],
-      "pkg": "p4"
-    },
-    "c3d9fbb": {
-      "type": "js",
-      "pkg": "p4"
-    },
-    "11207ed": {
-      "type": "js",
-      "pkg": "p4"
-    },
-    "39ea9ea": {
-      "url": "//n/amis-editor/dist/index.min_726d55b.js",
-      "type": "js",
-      "deps": [
-        "1356a1a",
-        "6f79e44"
-      ]
-    },
-    "1356a1a": {
-      "url": "//n/amis-editor/node_modules/mobx-react/dist/index_7566c64.js",
-      "type": "js",
-      "deps": [
-        "8a4420d",
-        "5062ad9"
-      ]
-    },
-    "8a4420d": {
-      "url": "//n/amis-editor/node_modules/mobx-react/dist/mobxreact.cjs.production.min_1367ceb.js",
-      "type": "js",
-      "deps": [
-        "6f79e44",
-        "5a279ef"
-      ]
-    },
-    "6f79e44": {
-      "url": "//n/amis-editor/node_modules/mobx/lib/index_70da50e.js",
-      "type": "js",
-      "deps": [
-        "4c32aa7",
-        "366c09d"
-      ]
-    },
-    "4c32aa7": {
-      "url": "//n/amis-editor/node_modules/mobx/lib/mobx.min_25ec2ae.js",
-      "type": "js"
-    },
-    "366c09d": {
-      "url": "//n/amis-editor/node_modules/mobx/lib/mobx_bb8d043.js",
-      "type": "js"
-    },
-    "5a279ef": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/index_6b35664.js",
-      "type": "js",
-      "deps": [
-        "26c3304",
-        "161c55d",
-        "7205d88",
-        "4e65aca",
-        "598281a",
-        "f1c4a15",
-        "d0a85c0",
-        "4a01fda",
-        "9f8dfbb",
-        "7c6be09",
-        "3a466d1"
-      ]
-    },
-    "26c3304": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/assertEnvironment_1c42507.js",
-      "type": "js",
-      "deps": [
-        "6f79e44"
-      ]
-    },
-    "161c55d": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/utils/reactBatchedUpdates_4f17033.js",
-      "type": "js"
-    },
-    "7205d88": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/observerBatching_8f0ab66.js",
-      "type": "js",
-      "deps": [
-        "6f79e44",
-        "4a01fda"
-      ]
-    },
-    "4a01fda": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/utils_3913aeb.js",
-      "type": "js"
-    },
-    "4e65aca": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/staticRendering_9fc042d.js",
-      "type": "js"
-    },
-    "598281a": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/observer_9cc44ef.js",
-      "type": "js",
-      "deps": [
-        "4e65aca",
-        "f1c4a15"
-      ]
-    },
-    "f1c4a15": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/useObserver_5403138.js",
-      "type": "js",
-      "deps": [
-        "6f79e44",
-        "b2e4547",
-        "494d7d6",
-        "4e65aca",
-        "4a01fda",
-        "3a466d1"
-      ]
-    },
-    "b2e4547": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/printDebugValue_4d9597b.js",
-      "type": "js",
-      "deps": [
-        "6f79e44"
-      ]
-    },
-    "494d7d6": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/reactionCleanupTracking_e79bbab.js",
-      "type": "js"
-    },
-    "3a466d1": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/useQueuedForceUpdate_b9b2e2a.js",
-      "type": "js"
-    },
-    "d0a85c0": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/ObserverComponent_c903cd0.js",
-      "type": "js",
-      "deps": [
-        "f1c4a15"
-      ]
-    },
-    "9f8dfbb": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/useAsObservableSource_4b36ce9.js",
-      "type": "js",
-      "deps": [
-        "6f79e44",
-        "4a01fda"
-      ]
-    },
-    "7c6be09": {
-      "url": "//n/amis-editor/node_modules/mobx-react-lite/lib/useLocalStore_5730eb9.js",
-      "type": "js",
-      "deps": [
-        "6f79e44",
-        "9f8dfbb",
-        "4a01fda"
-      ]
-    },
-    "5062ad9": {
-      "url": "//n/amis-editor/node_modules/mobx-react/dist/mobxreact.cjs.development_f54bba9.js",
-      "type": "js",
-      "deps": [
-        "6f79e44",
-        "5a279ef"
-      ]
     },
     "c5bbfa6": {
       "type": "js",
@@ -6039,29 +5810,21 @@ amis.require.resourceMap({
       "pkg": "p2"
     },
     "b582765": {
-      "url": "//n/flv.js/dist/flv_f987c60.js",
+      "url": "//amis.giscafer.com/n/flv.js/dist/flv_f987c60.js",
       "type": "js"
     },
     "a3e49d7": {
-      "url": "//n/hls.js/dist/hls_81f97eb.js",
+      "url": "//amis.giscafer.com/n/hls.js/dist/hls_81f97eb.js",
       "type": "js"
     }
   },
   "pkg": {
-    "p5": {
-      "url": "//pkg/rest_da7ae71.js",
-      "type": "js"
-    },
-    "p4": {
-      "url": "//pkg/app_d03db16.js",
-      "type": "js"
-    },
     "p1": {
-      "url": "//pkg/rich-text_569ad1a.js",
+      "url": "//amis.giscafer.com/pkg/rich-text_569ad1a.js",
       "type": "js"
     },
     "p2": {
-      "url": "//pkg/echarts_8c8071e.js",
+      "url": "//amis.giscafer.com/pkg/echarts_8c8071e.js",
       "type": "js"
     }
   }

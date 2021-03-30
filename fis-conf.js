@@ -253,7 +253,7 @@ ghPages.match('{*.jsx,*.tsx,*.ts,*.js}', {
     }
 });
 ghPages.match('*', {
-    domain: '/',
+    domain: '//amis.giscafer.com',
     deploy: [
         fis.plugin('skip-packed'),
         fis.plugin('local-deliver', {
