@@ -26,7 +26,7 @@ git commit -m "更新 gh-pages"
 
 git push
 
-git subtree push --prefix gh-pages origin gh-pages -f
+git subtree push --prefix gh-pages origin gh-pages
 
 git commit -m 'rebuild pages' --allow-empty
 
