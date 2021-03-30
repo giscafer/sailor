@@ -1,7 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$ref": "#/definitions/PageSchema",
+  "$ref": "#/definitions/RootSchema",
   "definitions": {
+    "RootSchema": {
+      "$ref": "#/definitions/PageSchema"
+    },
     "PageSchema": {
       "type": "object",
       "properties": {
@@ -131,8 +134,33 @@
       "description": "amis Page 渲染器。详情请见：https://baidu.gitee.io/amis/docs/components/page"
     },
     "SchemaClassName": {
-      "type": "string",
-      "description": "css类名，字符串格式"
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean",
+                "const": true
+              },
+              {
+                "type": "boolean",
+                "const": false
+              },
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/SchemaExpression"
+              }
+            ]
+          }
+        }
+      ],
+      "description": "css类名，配置字符串，或者对象。\n\n    className: \"red\"\n\n用对象配置时意味着你能跟表达式一起搭配使用，如：\n\n    className: {         \"red\": \"data.progress > 80\",         \"blue\": \"data.progress > 60\"     }"
     },
     "SchemaExpression": {
       "type": "string",
@@ -281,6 +309,9 @@
           "$ref": "#/definitions/AudioSchema"
         },
         {
+          "$ref": "#/definitions/AvatarSchema"
+        },
+        {
           "$ref": "#/definitions/ButtonGroupSchema"
         },
         {
@@ -423,6 +454,9 @@
         },
         {
           "$ref": "#/definitions/FormSchema"
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema"
         }
       ]
     },
@@ -484,6 +518,10 @@
         "inline": {
           "type": "boolean",
           "description": "是否内联显示？"
+        },
+        "style": {
+          "type": "object",
+          "description": "自定义样式"
         }
       },
       "required": [
@@ -755,6 +793,14 @@
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
         },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
+        },
         "actionType": {
           "type": "string",
           "const": "ajax",
@@ -765,13 +811,16 @@
           "description": "配置 ajax 发送地址"
         },
         "feedback": {
-          "$ref": "#/definitions/DialogSchemaBase"
+          "$ref": "#/definitions/FeedbackDialog"
         },
         "reload": {
           "$ref": "#/definitions/SchemaReload"
         },
         "redirect": {
           "type": "string"
+        },
+        "ignoreConfirm": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -862,7 +911,10 @@
         "headers": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
+            "type": [
+              "string",
+              "number"
+            ]
           },
           "description": "携带 headers，用法和 data 一样，可以用变量。"
         },
@@ -916,7 +968,7 @@
     "SchemaTokenizeableString": {
       "type": "string"
     },
-    "DialogSchemaBase": {
+    "FeedbackDialog": {
       "type": "object",
       "properties": {
         "actions": {
@@ -1007,8 +1059,16 @@
           "description": "是否显示"
         },
         "visibleOn": {
-          "$ref": "#/definitions/SchemaExpression",
-          "description": "是否显示表达式"
+          "type": "string",
+          "description": "可以用来配置 feedback 的出现条件"
+        },
+        "skipRestOnCancel": {
+          "type": "boolean",
+          "description": "feedback 弹框取消是否中断后续操作"
+        },
+        "skipRestOnConfirm": {
+          "type": "boolean",
+          "description": "feedback 弹框确认是否中断后续操作"
         }
       },
       "additionalProperties": false
@@ -1160,6 +1220,14 @@
         "target": {
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
+        },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
         },
         "actionType": {
           "type": "string",
@@ -1322,6 +1390,14 @@
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
         },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
+        },
         "actionType": {
           "type": "string",
           "const": "link",
@@ -1479,6 +1555,14 @@
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
         },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
+        },
         "actionType": {
           "type": "string",
           "const": "dialog",
@@ -1504,6 +1588,103 @@
         "dialog",
         "type"
       ],
+      "additionalProperties": false
+    },
+    "DialogSchemaBase": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ActionSchema"
+          },
+          "description": "默认不用填写，自动会创建确认和取消按钮。"
+        },
+        "body": {
+          "$ref": "#/definitions/SchemaCollection",
+          "description": "内容区域"
+        },
+        "bodyClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置 Body 容器 className"
+        },
+        "closeOnEsc": {
+          "type": "boolean",
+          "description": "是否支持按 ESC 关闭 Dialog"
+        },
+        "name": {
+          "$ref": "#/definitions/SchemaName"
+        },
+        "size": {
+          "type": "string",
+          "enum": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl",
+            "full"
+          ],
+          "description": "Dialog 大小"
+        },
+        "title": {
+          "$ref": "#/definitions/SchemaCollection",
+          "description": "请通过配置 title 设置标题"
+        },
+        "header": {
+          "$ref": "#/definitions/SchemaCollection"
+        },
+        "headerClassName": {
+          "$ref": "#/definitions/SchemaClassName"
+        },
+        "footer": {
+          "$ref": "#/definitions/SchemaCollection"
+        },
+        "confirm": {
+          "type": "boolean",
+          "description": "影响自动生成的按钮，如果自己配置了按钮这个配置无效。"
+        },
+        "showCloseButton": {
+          "type": "boolean",
+          "description": "是否显示关闭按钮"
+        },
+        "showErrorMsg": {
+          "type": "boolean",
+          "description": "是否显示错误信息"
+        },
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "容器 css 类名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        }
+      },
       "additionalProperties": false
     },
     "DrawerActionSchema": {
@@ -1645,6 +1826,14 @@
         "target": {
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
+        },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
         },
         "actionType": {
           "type": "string",
@@ -1926,6 +2115,14 @@
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
         },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
+        },
         "actionType": {
           "type": "string",
           "const": "copy",
@@ -2083,6 +2280,14 @@
           "$ref": "#/definitions/SchemaReload",
           "description": "指定目标组件。"
         },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
+        },
         "actionType": {
           "type": "string",
           "const": "reload",
@@ -2234,6 +2439,14 @@
         "target": {
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
+        },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
         },
         "actionType": {
           "type": "string",
@@ -2395,6 +2608,14 @@
           "type": "string",
           "description": "可以指定让谁来触发这个动作。"
         },
+        "countDown": {
+          "type": "number",
+          "description": "点击后的禁止倒计时（秒）"
+        },
+        "countDownTpl": {
+          "type": "string",
+          "description": "倒计时文字自定义"
+        },
         "actionType": {
           "type": "string"
         }
@@ -2554,6 +2775,260 @@
       ],
       "additionalProperties": false,
       "description": "Audio 音频渲染器。 文档：https://baidu.gitee.io/amis/docs/components/audio"
+    },
+    "AvatarSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "avatar",
+          "description": "指定为用户头像控件"
+        },
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "类名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        },
+        "size": {
+          "type": "number",
+          "description": "大小"
+        },
+        "shape": {
+          "type": "string",
+          "enum": [
+            "circle",
+            "square"
+          ],
+          "description": "形状"
+        },
+        "icon": {
+          "type": "string",
+          "description": "图标"
+        },
+        "text": {
+          "type": "string",
+          "description": "文本"
+        },
+        "src": {
+          "type": "string",
+          "description": "图片地址"
+        },
+        "fit": {
+          "type": "string",
+          "enum": [
+            "fill",
+            "contain",
+            "cover",
+            "none",
+            "scale-down"
+          ],
+          "description": "图片相对于容器的缩放方式"
+        },
+        "alt": {
+          "type": "string",
+          "description": "图片无法显示时的替换文字地址"
+        },
+        "style": {
+          "type": "object",
+          "description": "自定义样式"
+        },
+        "badge": {
+          "$ref": "#/definitions/BadgeSchema",
+          "description": "角标"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "description": "Avatar 用户头像显示 文档：https://baidu.gitee.io/amis/docs/components/avatar"
+    },
+    "BadgeSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/SchemaType"
+        },
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "容器 css 类名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "动态控制是否显示"
+        },
+        "text": {
+          "type": "string",
+          "description": "文本内容"
+        },
+        "size": {
+          "type": "number",
+          "description": "大小"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "text",
+            "dot"
+          ],
+          "description": "角标类型"
+        },
+        "position": {
+          "type": "string",
+          "enum": [
+            "top-right",
+            "top-left",
+            "bottom-right",
+            "bottom-left"
+          ],
+          "description": "角标位置"
+        },
+        "style": {
+          "type": "object",
+          "description": "角标的自定义样式"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "description": "Badge 角标。 文档：https://baidu.gitee.io/amis/docs/components/badge"
+    },
+    "SchemaType": {
+      "type": "string",
+      "enum": [
+        "form",
+        "button",
+        "submit",
+        "reset",
+        "alert",
+        "app",
+        "audio",
+        "avatar",
+        "button-group",
+        "button-toolbar",
+        "breadcrumb",
+        "card",
+        "cards",
+        "carousel",
+        "chart",
+        "collapse",
+        "color",
+        "container",
+        "crud",
+        "custom",
+        "date",
+        "static-date",
+        "datetime",
+        "static-datetime",
+        "time",
+        "static-time",
+        "month",
+        "static-month",
+        "dialog",
+        "divider",
+        "dropdown-button",
+        "drawer",
+        "each",
+        "flex",
+        "grid",
+        "grid-2d",
+        "hbox",
+        "icon",
+        "iframe",
+        "image",
+        "static-image",
+        "images",
+        "static-images",
+        "json",
+        "static-json",
+        "link",
+        "list",
+        "log",
+        "static-list",
+        "map",
+        "mapping",
+        "nav",
+        "page",
+        "pagination",
+        "pagination-wrapper",
+        "property",
+        "operation",
+        "panel",
+        "plain",
+        "text",
+        "progress",
+        "qrcode",
+        "qr-code",
+        "remark",
+        "search-box",
+        "service",
+        "sparkline",
+        "status",
+        "switch",
+        "table",
+        "static-table",
+        "tabs",
+        "html",
+        "tpl",
+        "tasks",
+        "vbox",
+        "video",
+        "wizard",
+        "wrapper",
+        "anchor-nav"
+      ]
     },
     "ButtonGroupSchema": {
       "type": "object",
@@ -2894,6 +3369,10 @@
           "type": "string",
           "description": "弹框外层类名"
         },
+        "popOverEnableOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "配置当前行是否启动，要用表达式"
+        },
         "mode": {
           "type": "string",
           "enum": [
@@ -3165,6 +3644,9 @@
           "$ref": "#/definitions/MatrixControlSchema"
         },
         {
+          "$ref": "#/definitions/MonthRangeControlSchema"
+        },
+        {
           "$ref": "#/definitions/NestedSelectControlSchema"
         },
         {
@@ -3235,6 +3717,9 @@
         },
         {
           "$ref": "#/definitions/TreeSelectControlSchema"
+        },
+        {
+          "$ref": "#/definitions/AnchorNavControlSchema"
         },
         {
           "$ref": "#/definitions/DividerSchema"
@@ -4099,6 +4584,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "ajax",
@@ -4109,13 +4602,16 @@
               "description": "配置 ajax 发送地址"
             },
             "feedback": {
-              "$ref": "#/definitions/DialogSchemaBase"
+              "$ref": "#/definitions/FeedbackDialog"
             },
             "reload": {
               "$ref": "#/definitions/SchemaReload"
             },
             "redirect": {
               "type": "string"
+            },
+            "ignoreConfirm": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -4494,6 +4990,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -4886,6 +5390,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "link",
@@ -5272,6 +5784,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -5670,6 +6190,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "drawer",
@@ -6067,6 +6595,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "copy",
@@ -6454,6 +6990,14 @@
               "$ref": "#/definitions/SchemaReload",
               "description": "指定目标组件。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "reload",
@@ -6834,6 +7378,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -7225,6 +7777,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string"
@@ -10997,6 +11557,12 @@
             },
             "minimum": {
               "type": "number"
+            },
+            "step": {
+              "type": "number"
+            },
+            "precision": {
+              "type": "number"
             }
           },
           "required": [
@@ -11225,6 +11791,12 @@
             "options": {
               "type": "array",
               "items": {}
+            },
+            "source": {
+              "$ref": "#/definitions/SchemaApi"
+            },
+            "searchable": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -11411,6 +11983,10 @@
         "style": {
           "type": "object",
           "description": "自定义样式"
+        },
+        "wrapperComponent": {
+          "type": "string",
+          "description": "使用的标签"
         },
         "className": {
           "$ref": "#/definitions/SchemaClassName",
@@ -17749,6 +18325,18 @@
             "$ref": "#/definitions/SchemaTokenizeableString"
           },
           "description": "上传后把其他字段同步到表单内部。"
+        },
+        "frameImage": {
+          "$ref": "#/definitions/SchemaUrlPath",
+          "description": "默认占位图图片地址"
+        },
+        "fixedSize": {
+          "type": "boolean",
+          "description": "是否开启固定尺寸"
+        },
+        "fixedSizeClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "固定尺寸的 CSS类名"
         }
       },
       "required": [
@@ -18501,6 +19089,10 @@
         "itemSchema": {
           "$ref": "#/definitions/SchemaCollection",
           "description": "可以自定义展示模板。"
+        },
+        "listClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "支持配置 list div 的 css 类名。 比如：flex justify-between"
         }
       },
       "required": [
@@ -19481,6 +20073,346 @@
       ],
       "additionalProperties": false,
       "description": "Matrix 选择控件。适合做权限勾选。 文档：https://baidu.gitee.io/amis/docs/components/form/matrix"
+    },
+    "MonthRangeControlSchema": {
+      "type": "object",
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "容器 css 类名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        },
+        "type": {
+          "type": "string",
+          "const": "month-range",
+          "description": "指定为日期范围控件"
+        },
+        "size": {
+          "type": "string",
+          "enum": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "full"
+          ],
+          "description": "表单项大小"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ],
+          "description": "描述标题"
+        },
+        "labelClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置 label className"
+        },
+        "name": {
+          "type": "string",
+          "description": "字段名，表单提交时的 key，支持多层级，用.连接，如： a.b.c"
+        },
+        "remark": {
+          "$ref": "#/definitions/SchemaRemark",
+          "description": "显示一个小图标, 鼠标放上去的时候显示提示内容"
+        },
+        "labelRemark": {
+          "$ref": "#/definitions/SchemaRemark",
+          "description": "显示一个小图标, 鼠标放上去的时候显示提示内容, 这个小图标跟 label 在一起"
+        },
+        "hint": {
+          "type": "string",
+          "description": "输入提示，聚焦的时候显示"
+        },
+        "submitOnChange": {
+          "type": "boolean",
+          "description": "当修改完的时候是否提交表单。"
+        },
+        "readOnly": {
+          "type": "boolean",
+          "description": "是否只读"
+        },
+        "validateOnChange": {
+          "type": "boolean",
+          "description": "不设置时，当表单提交过后表单项每次修改都会触发重新验证， 如果设置了，则由此配置项来决定要不要每次修改都触发验证。"
+        },
+        "description": {
+          "type": "string",
+          "description": "描述内容，支持 Html 片段。"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "descriptionClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置描述上的 className"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "inline",
+            "horizontal"
+          ],
+          "description": "配置当前表单项展示模式"
+        },
+        "horizontal": {
+          "$ref": "#/definitions/FormSchemaHorizontal",
+          "description": "当配置为水平布局的时候，用来配置具体的左右分配。"
+        },
+        "inline": {
+          "type": "boolean",
+          "description": "表单 control 是否为 inline 模式。"
+        },
+        "inputClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置 input className"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "占位符"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "是否为必填"
+        },
+        "validationErrors": {
+          "type": "object",
+          "properties": {
+            "isAlpha": {
+              "type": "string"
+            },
+            "isAlphanumeric": {
+              "type": "string"
+            },
+            "isEmail": {
+              "type": "string"
+            },
+            "isFloat": {
+              "type": "string"
+            },
+            "isInt": {
+              "type": "string"
+            },
+            "isJson": {
+              "type": "string"
+            },
+            "isLength": {
+              "type": "string"
+            },
+            "isNumeric": {
+              "type": "string"
+            },
+            "isRequired": {
+              "type": "string"
+            },
+            "isUrl": {
+              "type": "string"
+            },
+            "matchRegexp": {
+              "type": "string"
+            },
+            "matchRegexp2": {
+              "type": "string"
+            },
+            "matchRegexp3": {
+              "type": "string"
+            },
+            "matchRegexp4": {
+              "type": "string"
+            },
+            "matchRegexp5": {
+              "type": "string"
+            },
+            "maxLength": {
+              "type": "string"
+            },
+            "maximum": {
+              "type": "string"
+            },
+            "minLength": {
+              "type": "string"
+            },
+            "minimum": {
+              "type": "string"
+            }
+          },
+          "description": "验证失败的提示信息"
+        },
+        "validations": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "isAlpha": {
+                  "type": "boolean",
+                  "description": "是否是字母"
+                },
+                "isAlphanumeric": {
+                  "type": "boolean",
+                  "description": "是否为字母数字"
+                },
+                "isEmail": {
+                  "type": "boolean",
+                  "description": "是否为邮箱地址"
+                },
+                "isFloat": {
+                  "type": "boolean",
+                  "description": "是否为浮点型"
+                },
+                "isInt": {
+                  "type": "boolean",
+                  "description": "是否为整型"
+                },
+                "isJson": {
+                  "type": "boolean",
+                  "description": "是否为 json"
+                },
+                "isLength": {
+                  "type": "number",
+                  "description": "长度等于指定值"
+                },
+                "isNumeric": {
+                  "type": "boolean",
+                  "description": "是否为数字"
+                },
+                "isRequired": {
+                  "type": "boolean",
+                  "description": "是否为必填"
+                },
+                "isUrl": {
+                  "type": "boolean",
+                  "description": "是否为 URL 地址"
+                },
+                "matchRegexp": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp1": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp2": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp3": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp4": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp5": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "maxLength": {
+                  "type": "number",
+                  "description": "最大长度为指定值"
+                },
+                "maximum": {
+                  "type": "number",
+                  "description": "最大值为指定值"
+                },
+                "minLength": {
+                  "type": "number",
+                  "description": "最小长度为指定值"
+                },
+                "minimum": {
+                  "type": "number",
+                  "description": "最小值为指定值"
+                }
+              }
+            }
+          ]
+        },
+        "value": {
+          "description": "这里面 value 需要特殊说明一下，因为支持相对值。* `-2mins` 2分钟前\\n * `+2days` 2天后\\n* `-10week` 十周前\\n可用单位： `min`、`hour`、`day`、`week`、`month`、`year`。所有单位支持复数形式。"
+        },
+        "clearValueOnHidden": {
+          "type": "boolean",
+          "description": "表单项隐藏时，是否在当前 Form 中删除掉该表单项值。注意同名的未隐藏的表单项值也会删掉"
+        },
+        "delimiter": {
+          "type": "string",
+          "description": "分割符, 因为有两个值，开始时间和结束时间，所以要有连接符。默认为英文逗号。"
+        },
+        "format": {
+          "type": "string",
+          "description": "默认 `X` 即时间戳格式，用来提交的时间格式。更多格式类型请参考 moment."
+        },
+        "inputFormat": {
+          "type": "string",
+          "description": "默认 `YYYY-MM` 用来配置显示的时间格式。"
+        },
+        "joinValues": {
+          "type": "boolean",
+          "description": "开启后将选中的选项 value 的值用连接符拼接起来，作为当前表单项的值。如： `value1,value2` 否则为 `[value1, value2]`"
+        },
+        "maxDate": {
+          "type": "string",
+          "description": "最大日期限制，支持变量 $xxx 来取值，或者用相对值如：* `-2mins` 2分钟前\\n * `+2days` 2天后\\n* `-10week` 十周前\\n可用单位： `min`、`hour`、`day`、`week`、`month`、`year`。所有单位支持复数形式。"
+        },
+        "minDate": {
+          "type": "string",
+          "description": "最小日期限制，支持变量 $xxx 来取值，或者用相对值如：* `-2mins` 2分钟前\\n * `+2days` 2天后\\n* `-10week` 十周前\\n可用单位： `min`、`hour`、`day`、`week`、`month`、`year`。所有单位支持复数形式。"
+        },
+        "maxDuration": {
+          "type": "string",
+          "description": "最大跨度，比如 2days"
+        },
+        "minDuration": {
+          "type": "string",
+          "description": "最小跨度，比如 2days"
+        },
+        "embed": {
+          "type": "boolean",
+          "description": "开启后变成非弹出模式，即内联模式。"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "description": "MonthRange 月范围控件 文档：https://baidu.gitee.io/amis/docs/components/form/month-range"
     },
     "NestedSelectControlSchema": {
       "type": "object",
@@ -23177,6 +24109,10 @@
         "searchable": {
           "type": "boolean",
           "description": "是否可以搜索值"
+        },
+        "menuTpl": {
+          "type": "string",
+          "description": "可以自定义菜单展示。"
         }
       },
       "required": [
@@ -23994,6 +24930,10 @@
               "type": "boolean",
               "description": "提交完后重置表单"
             },
+            "clearAfterSubmit": {
+              "type": "boolean",
+              "description": "提交后清空表单"
+            },
             "mode": {
               "type": "string",
               "enum": [
@@ -24144,9 +25084,6 @@
               "description": "是否显示表达式"
             }
           },
-          "required": [
-            "rules"
-          ],
           "additionalProperties": false,
           "description": "子表单详情"
         }
@@ -24471,6 +25408,14 @@
         "option": {
           "type": "string",
           "description": "选项说明"
+        },
+        "onText": {
+          "type": "string",
+          "description": "开启时显示的文本"
+        },
+        "offText": {
+          "type": "string",
+          "description": "关闭时显示的文本"
         }
       },
       "required": [
@@ -25730,6 +26675,24 @@
               "description": "列宽度"
             },
             "filterable": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "source": {
+                      "type": "string"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ],
               "description": "todo"
             },
             "breakpoint": {
@@ -25810,6 +26773,24 @@
           "description": "列宽度"
         },
         "filterable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "options": {
+                  "type": "array",
+                  "items": {}
+                }
+              },
+              "additionalProperties": false
+            }
+          ],
           "description": "todo"
         },
         "breakpoint": {
@@ -25841,6 +26822,10 @@
           "type": "string",
           "const": "tabs",
           "description": "表单项类型"
+        },
+        "source": {
+          "type": "string",
+          "description": "关联已有数据，选项卡直接根据目标数据重复。"
         },
         "tabsClassName": {
           "$ref": "#/definitions/SchemaClassName",
@@ -25935,7 +26920,7 @@
         },
         "name": {
           "type": "string",
-          "description": "字段名，表单提交时的 key，支持多层级，用.连接，如： a.b.c"
+          "description": "如果配置了名称，Tabs 的打开项会同步写入变量中。"
         },
         "remark": {
           "$ref": "#/definitions/SchemaRemark",
@@ -26181,6 +27166,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "value": {
+          "type": "string",
+          "description": "Tab 值, 当作为表当项使用时，这个值可以写入到表单中。"
+        },
         "controls": {
           "type": "array",
           "items": {
@@ -27198,7 +28187,10 @@
             "text",
             "email",
             "url",
-            "password"
+            "password",
+            "native-date",
+            "native-time",
+            "native-number"
           ],
           "description": "表单项类型"
         },
@@ -27723,6 +28715,14 @@
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
                 },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
+                },
                 "actionType": {
                   "type": "string",
                   "const": "ajax",
@@ -27733,13 +28733,16 @@
                   "description": "配置 ajax 发送地址"
                 },
                 "feedback": {
-                  "$ref": "#/definitions/DialogSchemaBase"
+                  "$ref": "#/definitions/FeedbackDialog"
                 },
                 "reload": {
                   "$ref": "#/definitions/SchemaReload"
                 },
                 "redirect": {
                   "type": "string"
+                },
+                "ignoreConfirm": {
+                  "type": "boolean"
                 },
                 "position": {
                   "type": "string",
@@ -27892,6 +28895,14 @@
                 "target": {
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
+                },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
                 },
                 "actionType": {
                   "type": "string",
@@ -28058,6 +29069,14 @@
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
                 },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
+                },
                 "actionType": {
                   "type": "string",
                   "const": "link",
@@ -28218,6 +29237,14 @@
                 "target": {
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
+                },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
                 },
                 "actionType": {
                   "type": "string",
@@ -28390,6 +29417,14 @@
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
                 },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
+                },
                 "actionType": {
                   "type": "string",
                   "const": "drawer",
@@ -28561,6 +29596,14 @@
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
                 },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
+                },
                 "actionType": {
                   "type": "string",
                   "const": "copy",
@@ -28722,6 +29765,14 @@
                   "$ref": "#/definitions/SchemaReload",
                   "description": "指定目标组件。"
                 },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
+                },
                 "actionType": {
                   "type": "string",
                   "const": "reload",
@@ -28876,6 +29927,14 @@
                 "target": {
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
+                },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
                 },
                 "actionType": {
                   "type": "string",
@@ -29041,6 +30100,14 @@
                 "target": {
                   "type": "string",
                   "description": "可以指定让谁来触发这个动作。"
+                },
+                "countDown": {
+                  "type": "number",
+                  "description": "点击后的禁止倒计时（秒）"
+                },
+                "countDownTpl": {
+                  "type": "string",
+                  "description": "倒计时文字自定义"
                 },
                 "actionType": {
                   "type": "string"
@@ -30799,6 +31866,392 @@
       "additionalProperties": false,
       "description": "Tree 下拉选择框。 文档：https://baidu.gitee.io/amis/docs/components/form/tree"
     },
+    "AnchorNavControlSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "anchor-nav",
+          "description": "表单项类型"
+        },
+        "active": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "description": "被激活（定位）的楼层"
+        },
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "容器 css 类名"
+        },
+        "linkClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "导航样式名"
+        },
+        "sectionClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "楼层样式名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        },
+        "size": {
+          "type": "string",
+          "enum": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "full"
+          ],
+          "description": "表单项大小"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ],
+          "description": "描述标题"
+        },
+        "labelClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置 label className"
+        },
+        "name": {
+          "type": "string",
+          "description": "字段名，表单提交时的 key，支持多层级，用.连接，如： a.b.c"
+        },
+        "remark": {
+          "$ref": "#/definitions/SchemaRemark",
+          "description": "显示一个小图标, 鼠标放上去的时候显示提示内容"
+        },
+        "labelRemark": {
+          "$ref": "#/definitions/SchemaRemark",
+          "description": "显示一个小图标, 鼠标放上去的时候显示提示内容, 这个小图标跟 label 在一起"
+        },
+        "hint": {
+          "type": "string",
+          "description": "输入提示，聚焦的时候显示"
+        },
+        "submitOnChange": {
+          "type": "boolean",
+          "description": "当修改完的时候是否提交表单。"
+        },
+        "readOnly": {
+          "type": "boolean",
+          "description": "是否只读"
+        },
+        "validateOnChange": {
+          "type": "boolean",
+          "description": "不设置时，当表单提交过后表单项每次修改都会触发重新验证， 如果设置了，则由此配置项来决定要不要每次修改都触发验证。"
+        },
+        "description": {
+          "type": "string",
+          "description": "描述内容，支持 Html 片段。"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "descriptionClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置描述上的 className"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "inline",
+            "horizontal"
+          ],
+          "description": "配置当前表单项展示模式"
+        },
+        "horizontal": {
+          "$ref": "#/definitions/FormSchemaHorizontal",
+          "description": "当配置为水平布局的时候，用来配置具体的左右分配。"
+        },
+        "inline": {
+          "type": "boolean",
+          "description": "表单 control 是否为 inline 模式。"
+        },
+        "inputClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "配置 input className"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "占位符"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "是否为必填"
+        },
+        "validationErrors": {
+          "type": "object",
+          "properties": {
+            "isAlpha": {
+              "type": "string"
+            },
+            "isAlphanumeric": {
+              "type": "string"
+            },
+            "isEmail": {
+              "type": "string"
+            },
+            "isFloat": {
+              "type": "string"
+            },
+            "isInt": {
+              "type": "string"
+            },
+            "isJson": {
+              "type": "string"
+            },
+            "isLength": {
+              "type": "string"
+            },
+            "isNumeric": {
+              "type": "string"
+            },
+            "isRequired": {
+              "type": "string"
+            },
+            "isUrl": {
+              "type": "string"
+            },
+            "matchRegexp": {
+              "type": "string"
+            },
+            "matchRegexp2": {
+              "type": "string"
+            },
+            "matchRegexp3": {
+              "type": "string"
+            },
+            "matchRegexp4": {
+              "type": "string"
+            },
+            "matchRegexp5": {
+              "type": "string"
+            },
+            "maxLength": {
+              "type": "string"
+            },
+            "maximum": {
+              "type": "string"
+            },
+            "minLength": {
+              "type": "string"
+            },
+            "minimum": {
+              "type": "string"
+            }
+          },
+          "description": "验证失败的提示信息"
+        },
+        "validations": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "isAlpha": {
+                  "type": "boolean",
+                  "description": "是否是字母"
+                },
+                "isAlphanumeric": {
+                  "type": "boolean",
+                  "description": "是否为字母数字"
+                },
+                "isEmail": {
+                  "type": "boolean",
+                  "description": "是否为邮箱地址"
+                },
+                "isFloat": {
+                  "type": "boolean",
+                  "description": "是否为浮点型"
+                },
+                "isInt": {
+                  "type": "boolean",
+                  "description": "是否为整型"
+                },
+                "isJson": {
+                  "type": "boolean",
+                  "description": "是否为 json"
+                },
+                "isLength": {
+                  "type": "number",
+                  "description": "长度等于指定值"
+                },
+                "isNumeric": {
+                  "type": "boolean",
+                  "description": "是否为数字"
+                },
+                "isRequired": {
+                  "type": "boolean",
+                  "description": "是否为必填"
+                },
+                "isUrl": {
+                  "type": "boolean",
+                  "description": "是否为 URL 地址"
+                },
+                "matchRegexp": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp1": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp2": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp3": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp4": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "matchRegexp5": {
+                  "type": "string",
+                  "description": "内容命中指定正则"
+                },
+                "maxLength": {
+                  "type": "number",
+                  "description": "最大长度为指定值"
+                },
+                "maximum": {
+                  "type": "number",
+                  "description": "最大值为指定值"
+                },
+                "minLength": {
+                  "type": "number",
+                  "description": "最小长度为指定值"
+                },
+                "minimum": {
+                  "type": "number",
+                  "description": "最小值为指定值"
+                }
+              }
+            }
+          ]
+        },
+        "value": {
+          "description": "默认值，切记只能是静态值，不支持取变量，跟数据关联是通过设置 name 属性来实现的。"
+        },
+        "clearValueOnHidden": {
+          "type": "boolean",
+          "description": "表单项隐藏时，是否在当前 Form 中删除掉该表单项值。注意同名的未隐藏的表单项值也会删掉"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AnchorNavSectionControlSchema"
+          }
+        }
+      },
+      "required": [
+        "links",
+        "type"
+      ],
+      "additionalProperties": false,
+      "description": "AnchorNav 文档：https://baidu.gitee.io/amis/docs/components/form/anchor-nav"
+    },
+    "AnchorNavSectionControlSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FormControlSchema"
+          },
+          "description": "表单项集合"
+        },
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "容器 css 类名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        },
+        "title": {
+          "type": "string",
+          "description": "导航文字说明"
+        },
+        "href": {
+          "type": "string",
+          "description": "锚点链接"
+        },
+        "body": {
+          "$ref": "#/definitions/SchemaCollection",
+          "description": "内容"
+        }
+      },
+      "required": [
+        "title"
+      ]
+    },
     "DividerSchema": {
       "type": "object",
       "properties": {
@@ -31567,6 +33020,10 @@
         "style": {
           "type": "object",
           "description": "自定义样式"
+        },
+        "wrapperComponent": {
+          "type": "string",
+          "description": "使用的标签"
         }
       },
       "required": [
@@ -31847,6 +33304,11 @@
           },
           "description": "单条操作"
         },
+        "perPage": {
+          "type": "number",
+          "description": "每页个数，默认为 10，如果不是请设置。",
+          "default": 10
+        },
         "defaultParams": {
           "$ref": "#/definitions/PlainObject",
           "description": "可以默认给定初始参数如： {\\\"perPage\\\": 24}"
@@ -32161,6 +33623,10 @@
           },
           "additionalProperties": false,
           "description": "如果时内嵌模式，可以通过这个来配置默认的展开选项。"
+        },
+        "alwaysShowPagination": {
+          "type": "boolean",
+          "description": "默认只有当分页数大于 1 是才显示，如果总是想显示请配置。"
         }
       },
       "required": [
@@ -32320,6 +33786,11 @@
           },
           "description": "单条操作"
         },
+        "perPage": {
+          "type": "number",
+          "description": "每页个数，默认为 10，如果不是请设置。",
+          "default": 10
+        },
         "defaultParams": {
           "$ref": "#/definitions/PlainObject",
           "description": "可以默认给定初始参数如： {\\\"perPage\\\": 24}"
@@ -32634,6 +34105,10 @@
           },
           "additionalProperties": false,
           "description": "如果时内嵌模式，可以通过这个来配置默认的展开选项。"
+        },
+        "alwaysShowPagination": {
+          "type": "boolean",
+          "description": "默认只有当分页数大于 1 是才显示，如果总是想显示请配置。"
         }
       },
       "required": [
@@ -32681,6 +34156,14 @@
           "items": {
             "$ref": "#/definitions/ActionSchema"
           }
+        },
+        "actionsPosition": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "description": "操作位置，默认在右侧，可以设置成左侧。"
         },
         "avatar": {
           "$ref": "#/definitions/SchemaUrlPath",
@@ -32957,6 +34440,11 @@
           },
           "description": "单条操作"
         },
+        "perPage": {
+          "type": "number",
+          "description": "每页个数，默认为 10，如果不是请设置。",
+          "default": 10
+        },
         "defaultParams": {
           "$ref": "#/definitions/PlainObject",
           "description": "可以默认给定初始参数如： {\\\"perPage\\\": 24}"
@@ -33271,6 +34759,10 @@
           },
           "additionalProperties": false,
           "description": "如果时内嵌模式，可以通过这个来配置默认的展开选项。"
+        },
+        "alwaysShowPagination": {
+          "type": "boolean",
+          "description": "默认只有当分页数大于 1 是才显示，如果总是想显示请配置。"
         }
       },
       "required": [
@@ -33917,7 +35409,7 @@
         "type": {
           "type": "string",
           "const": "grid-2d",
-          "description": "指定为each展示类型"
+          "description": "指定为 grid-2d 展示类型"
         },
         "className": {
           "$ref": "#/definitions/SchemaClassName",
@@ -34315,7 +35807,7 @@
         },
         "className": {
           "$ref": "#/definitions/SchemaClassName",
-          "description": "容器 css 类名"
+          "description": "外层 css 类名"
         },
         "$ref": {
           "type": "string",
@@ -34378,10 +35870,24 @@
           "description": "是否显示尺寸。"
         },
         "alt": {
-          "type": "string"
+          "type": "string",
+          "description": "图片无法显示时的替换文本"
+        },
+        "height": {
+          "type": "number",
+          "description": "高度"
+        },
+        "width": {
+          "type": "number",
+          "description": "宽度"
         },
         "imageClassName": {
-          "$ref": "#/definitions/SchemaClassName"
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "图片 css 类名"
+        },
+        "thumbClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "图片缩率图外层 css 类名"
         },
         "caption": {
           "$ref": "#/definitions/SchemaTpl"
@@ -35041,7 +36547,7 @@
         },
         "showPageInput": {
           "type": "boolean",
-          "description": "是否显示跳转表单"
+          "description": "是否显示快速跳转输入框"
         },
         "mode": {
           "type": "string",
@@ -35101,6 +36607,15 @@
         "visibleOn": {
           "$ref": "#/definitions/SchemaExpression",
           "description": "是否显示表达式"
+        },
+        "showPageInput": {
+          "type": "boolean",
+          "description": "是否显示快速跳转输入框"
+        },
+        "maxButtons": {
+          "type": "number",
+          "description": "最多显示多少个分页按钮。",
+          "default": 5
         },
         "inputName": {
           "type": "string",
@@ -35833,6 +37348,14 @@
           "description": "默认为只读，要开启编辑请配置这个为 false",
           "default": true
         },
+        "onText": {
+          "type": "string",
+          "description": "开启时显示的文本"
+        },
+        "offText": {
+          "type": "string",
+          "description": "关闭时显示的文本"
+        },
         "saveImmediately": {
           "type": "boolean",
           "description": "是否立即保存。关乎到是否立即调用保存接口。"
@@ -36040,7 +37563,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/TabSchema"
-          }
+          },
+          "description": "选项卡成员。当配置了 source 时，选项卡成员，将会根据目标数据进行重复。"
+        },
+        "source": {
+          "type": "string",
+          "description": "关联已有数据，选项卡直接根据目标数据重复。"
         },
         "tabsClassName": {
           "$ref": "#/definitions/SchemaClassName",
@@ -36776,6 +38304,10 @@
           "type": "boolean",
           "description": "提交完后重置表单"
         },
+        "clearAfterSubmit": {
+          "type": "boolean",
+          "description": "提交后清空表单"
+        },
         "mode": {
           "type": "string",
           "enum": [
@@ -36915,10 +38447,7 @@
           "$ref": "#/definitions/SchemaExpression",
           "description": "是否显示表达式"
         }
-      },
-      "required": [
-        "rules"
-      ]
+      }
     },
     "WrapperSchema": {
       "type": "object",
@@ -36973,6 +38502,10 @@
             "lg",
             "none"
           ]
+        },
+        "style": {
+          "type": "object",
+          "description": "自定义样式"
         }
       },
       "required": [
@@ -37117,6 +38650,10 @@
           "type": "boolean",
           "description": "提交完后重置表单"
         },
+        "clearAfterSubmit": {
+          "type": "boolean",
+          "description": "提交后清空表单"
+        },
         "mode": {
           "type": "string",
           "enum": [
@@ -37236,11 +38773,134 @@
         }
       },
       "required": [
-        "rules",
         "type"
       ],
       "additionalProperties": false,
       "description": "Form 表单渲染器。\n\n说明：https://baidu.gitee.io/amis/docs/components/form/index"
+    },
+    "AnchorNavSchema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "anchor-nav",
+          "description": "指定为 AnchorNav 锚点导航渲染器"
+        },
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "样式名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AnchorNavSectionSchema"
+          },
+          "description": "楼层集合"
+        },
+        "active": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "description": "被激活（定位）的楼层"
+        },
+        "linkClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "导航样式名"
+        },
+        "sectionClassName": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "楼层样式名"
+        }
+      },
+      "required": [
+        "links",
+        "type"
+      ],
+      "additionalProperties": false,
+      "description": "AnchorNav 锚点导航渲染器 文档：https://baidu.gitee.io/amis/docs/components/anchor-nav"
+    },
+    "AnchorNavSectionSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "className": {
+          "$ref": "#/definitions/SchemaClassName",
+          "description": "容器 css 类名"
+        },
+        "$ref": {
+          "type": "string",
+          "description": "配合 definitions 一起使用，可以实现无限循环的渲染器。"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "是否禁用"
+        },
+        "disabledOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否禁用表达式"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "是否隐藏"
+        },
+        "hiddenOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否隐藏表达式"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "是否显示"
+        },
+        "visibleOn": {
+          "$ref": "#/definitions/SchemaExpression",
+          "description": "是否显示表达式"
+        },
+        "title": {
+          "type": "string",
+          "description": "导航文字说明"
+        },
+        "href": {
+          "type": "string",
+          "description": "锚点链接"
+        },
+        "body": {
+          "$ref": "#/definitions/SchemaCollection",
+          "description": "内容"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "description": "AnchorNavSection 锚点区域渲染器 文档：https://baidu.gitee.io/amis/docs/components/anchor-nav"
     },
     "SchemaObjectCardBodyField": {
       "anyOf": [
@@ -37255,7 +38915,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37280,6 +38940,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37342,7 +39009,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37429,7 +39096,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|label|labelClassName|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|label|labelClassName|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37492,7 +39159,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37555,7 +39222,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37569,7 +39236,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -37604,14 +39271,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|label|labelClassName|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|label|labelClassName|popOver|quickEdit|copyable)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         }
       ]
@@ -37989,6 +39663,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "ajax",
@@ -37999,13 +39681,16 @@
               "description": "配置 ajax 发送地址"
             },
             "feedback": {
-              "$ref": "#/definitions/DialogSchemaBase"
+              "$ref": "#/definitions/FeedbackDialog"
             },
             "reload": {
               "$ref": "#/definitions/SchemaReload"
             },
             "redirect": {
               "type": "string"
+            },
+            "ignoreConfirm": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -38014,7 +39699,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|api|feedback|reload|redirect|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|api|feedback|reload|redirect|ignoreConfirm|unique|columnClassName)$": {}
           }
         },
         {
@@ -38387,6 +40072,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -38408,7 +40101,7 @@
             "url"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|blank|url|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|blank|url|unique|columnClassName)$": {}
           }
         },
         {
@@ -38781,6 +40474,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -38798,7 +40499,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|link|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|link|unique|columnClassName)$": {}
           }
         },
         {
@@ -39171,6 +40872,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -39198,7 +40907,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|dialog|nextCondition|reload|redirect|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|dialog|nextCondition|reload|redirect|unique|columnClassName)$": {}
           }
         },
         {
@@ -39571,6 +41280,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -39598,7 +41315,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|drawer|nextCondition|reload|redirect|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|drawer|nextCondition|reload|redirect|unique|columnClassName)$": {}
           }
         },
         {
@@ -39972,6 +41689,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "copy",
@@ -39988,7 +41713,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|copy|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|copy|unique|columnClassName)$": {}
           }
         },
         {
@@ -40362,6 +42087,14 @@
               "$ref": "#/definitions/SchemaReload",
               "description": "指定目标组件。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "reload",
@@ -40373,7 +42106,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|unique|columnClassName)$": {}
           }
         },
         {
@@ -40745,6 +42478,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -40767,7 +42508,7 @@
           ],
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|unique|columnClassName)$": {}
           }
         },
         {
@@ -41141,6 +42882,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string"
             }
@@ -41149,7 +42898,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|unique|columnClassName)$": {}
           }
         }
       ]
@@ -41233,7 +42982,7 @@
           "$ref": "#/definitions/ContainerControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|bodyClassName|style|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|body|controls|tabs|fieldSet|unique|columnClassName)$": {}
+            "^(type|bodyClassName|style|wrapperComponent|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|body|controls|tabs|fieldSet|unique|columnClassName)$": {}
           }
         },
         {
@@ -41352,7 +43101,7 @@
           "$ref": "#/definitions/ImageControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|src|imageClassName|accept|allowInput|autoUpload|btnClassName|btnUploadClassName|compress|compressOptions|crop|reCropable|hideUploadButton|limit|maxLength|maxSize|receiver|showCompressOptions|multiple|joinValues|delimiter|extractValue|resetValue|thumbMode|thumbRatio|autoFill|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|src|imageClassName|accept|allowInput|autoUpload|btnClassName|btnUploadClassName|compress|compressOptions|crop|reCropable|hideUploadButton|limit|maxLength|maxSize|receiver|showCompressOptions|multiple|joinValues|delimiter|extractValue|resetValue|thumbMode|thumbRatio|autoFill|frameImage|fixedSize|fixedSizeClassName|unique|columnClassName)$": {}
           }
         },
         {
@@ -41366,7 +43115,7 @@
           "$ref": "#/definitions/ListControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|submitOnDBClick|imageClassName|itemSchema|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|submitOnDBClick|imageClassName|itemSchema|listClassName|unique|columnClassName)$": {}
           }
         },
         {
@@ -41388,6 +43137,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|multiple|singleSelectMode|source|columns|rows|rowLabel|unique|columnClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/MonthRangeControlSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|delimiter|format|inputFormat|joinValues|maxDate|minDate|maxDuration|minDuration|embed|unique|columnClassName)$": {}
           }
         },
         {
@@ -41457,7 +43213,7 @@
           "$ref": "#/definitions/SelectControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|autoComplete|searchable|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|autoComplete|searchable|menuTpl|unique|columnClassName)$": {}
           }
         },
         {
@@ -41478,7 +43234,7 @@
           "$ref": "#/definitions/SwitchControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|trueValue|falseValue|option|unique|columnClassName)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|trueValue|falseValue|option|onText|offText|unique|columnClassName)$": {}
           }
         },
         {
@@ -41498,7 +43254,7 @@
           "$ref": "#/definitions/TabsControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|tabs|unique|columnClassName)$": {}
+            "^(type|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|tabs|unique|columnClassName)$": {}
           }
         },
         {
@@ -41548,6 +43304,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|hideRoot|rootLabel|rootValue|showIcon|cascade|withChildren|onlyChildren|rootCreatable|unique|columnClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavControlSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|active|className|linkClassName|sectionClassName|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|links|unique|columnClassName)$": {}
           }
         },
         {
@@ -41932,6 +43695,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "ajax",
@@ -41942,13 +43713,16 @@
               "description": "配置 ajax 发送地址"
             },
             "feedback": {
-              "$ref": "#/definitions/DialogSchemaBase"
+              "$ref": "#/definitions/FeedbackDialog"
             },
             "reload": {
               "$ref": "#/definitions/SchemaReload"
             },
             "redirect": {
               "type": "string"
+            },
+            "ignoreConfirm": {
+              "type": "boolean"
             }
           },
           "required": [
@@ -41957,7 +43731,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|api|feedback|reload|redirect|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|api|feedback|reload|redirect|ignoreConfirm|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -42330,6 +44104,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -42351,7 +44133,7 @@
             "url"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|blank|url|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|blank|url|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -42724,6 +44506,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -42741,7 +44531,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|link|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|link|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -43114,6 +44904,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -43141,7 +44939,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|dialog|nextCondition|reload|redirect|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|dialog|nextCondition|reload|redirect|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -43514,6 +45312,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -43541,7 +45347,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|drawer|nextCondition|reload|redirect|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|drawer|nextCondition|reload|redirect|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -43915,6 +45721,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "copy",
@@ -43931,7 +45745,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|copy|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|copy|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -44305,6 +46119,14 @@
               "$ref": "#/definitions/SchemaReload",
               "description": "指定目标组件。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string",
               "const": "reload",
@@ -44316,7 +46138,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -44688,6 +46510,14 @@
             "target": {
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
+            },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
             },
             "actionType": {
               "type": "string",
@@ -44710,7 +46540,7 @@
           ],
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45084,6 +46914,14 @@
               "type": "string",
               "description": "可以指定让谁来触发这个动作。"
             },
+            "countDown": {
+              "type": "number",
+              "description": "点击后的禁止倒计时（秒）"
+            },
+            "countDownTpl": {
+              "type": "string",
+              "description": "倒计时文字自定义"
+            },
             "actionType": {
               "type": "string"
             }
@@ -45092,7 +46930,7 @@
             "type"
           ],
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|actionType|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|block|disabledTip|icon|iconClassName|level|primary|tooltip|tooltipPlacement|confirmText|activeLevel|activeClassName|close|requireSelected|mergeData|target|countDown|countDownTpl|actionType|columnClassName|columnRatio)$": {}
           }
         }
       ]
@@ -45176,7 +47014,7 @@
           "$ref": "#/definitions/ContainerControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|bodyClassName|style|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|body|controls|tabs|fieldSet|columnClassName|columnRatio)$": {}
+            "^(type|bodyClassName|style|wrapperComponent|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|body|controls|tabs|fieldSet|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45295,7 +47133,7 @@
           "$ref": "#/definitions/ImageControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|src|imageClassName|accept|allowInput|autoUpload|btnClassName|btnUploadClassName|compress|compressOptions|crop|reCropable|hideUploadButton|limit|maxLength|maxSize|receiver|showCompressOptions|multiple|joinValues|delimiter|extractValue|resetValue|thumbMode|thumbRatio|autoFill|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|src|imageClassName|accept|allowInput|autoUpload|btnClassName|btnUploadClassName|compress|compressOptions|crop|reCropable|hideUploadButton|limit|maxLength|maxSize|receiver|showCompressOptions|multiple|joinValues|delimiter|extractValue|resetValue|thumbMode|thumbRatio|autoFill|frameImage|fixedSize|fixedSizeClassName|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45309,7 +47147,7 @@
           "$ref": "#/definitions/ListControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|submitOnDBClick|imageClassName|itemSchema|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|submitOnDBClick|imageClassName|itemSchema|listClassName|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45331,6 +47169,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|multiple|singleSelectMode|source|columns|rows|rowLabel|columnClassName|columnRatio)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/MonthRangeControlSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|delimiter|format|inputFormat|joinValues|maxDate|minDate|maxDuration|minDuration|embed|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45400,7 +47245,7 @@
           "$ref": "#/definitions/SelectControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|autoComplete|searchable|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|options|source|selectFirst|initFetchOn|initFetch|multiple|joinValues|delimiter|extractValue|clearable|resetValue|deferApi|addApi|addControls|creatable|createBtnLabel|editable|editApi|editControls|removable|deleteApi|deleteConfirmText|autoFill|autoComplete|searchable|menuTpl|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45421,7 +47266,7 @@
           "$ref": "#/definitions/SwitchControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|trueValue|falseValue|option|columnClassName|columnRatio)$": {}
+            "^(className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|type|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|trueValue|falseValue|option|onText|offText|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45441,7 +47286,7 @@
           "$ref": "#/definitions/TabsControlSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|tabs|columnClassName|columnRatio)$": {}
+            "^(type|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|tabs|columnClassName|columnRatio)$": {}
           }
         },
         {
@@ -45494,6 +47339,13 @@
           }
         },
         {
+          "$ref": "#/definitions/AnchorNavControlSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|active|className|linkClassName|sectionClassName|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden|links|columnClassName|columnRatio)$": {}
+          }
+        },
+        {
           "$ref": "#/definitions/DividerSchema",
           "additionalProperties": false,
           "patternProperties": {
@@ -45515,7 +47367,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45540,6 +47392,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|tpl|popOver|quickEdit|copyable|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45602,7 +47461,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45689,7 +47548,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45752,7 +47611,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45815,7 +47674,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45829,7 +47688,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
@@ -45864,14 +47723,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|tpl|text|popOver|quickEdit|copyable|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|tpl|text|popOver|quickEdit|copyable|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|remark|labelRemark|hint|readOnly|validateOnChange|description|desc|descriptionClassName|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|remark|labelRemark|hint|readOnly|validateOnChange|description|desc|descriptionClassName|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|tpl|text|popOver|quickEdit|copyable|size|label|labelClassName|name|remark|labelRemark|hint|submitOnChange|readOnly|validateOnChange|description|desc|descriptionClassName|mode|horizontal|inline|inputClassName|placeholder|required|validationErrors|validations|value|clearValueOnHidden)$": {}
           }
         }
       ]
@@ -45889,7 +47755,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -45914,6 +47780,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -45976,7 +47849,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -46063,7 +47936,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|label|fixed|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|label|fixed|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -46126,7 +47999,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -46189,7 +48062,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -46203,7 +48076,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
@@ -46238,14 +48111,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|label|fixed|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|label|fixed|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|label|fixed|name|popOver|quickEdit|quickEditOnUpdate|copyable|sortable|searchable|toggled|width|filterable|breakpoint|remark)$": {}
           }
         }
       ]
@@ -46263,7 +48143,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46288,6 +48168,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46350,7 +48237,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46437,7 +48324,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|label|labelClassName|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|label|labelClassName|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46500,7 +48387,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46563,7 +48450,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46577,7 +48464,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
@@ -46612,14 +48499,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|label|labelClassName|popOver|quickEdit|copyable)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|label|labelClassName|popOver|quickEdit|copyable)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|label|labelClassName|name|popOver|quickEdit|copyable)$": {}
           }
         }
       ]
@@ -46637,7 +48531,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46662,6 +48556,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46724,7 +48625,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46811,7 +48712,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46874,7 +48775,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46937,7 +48838,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46951,7 +48852,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
@@ -46986,14 +48887,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|columnClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|columnClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|xs|xsHidden|xsOffset|xsPull|xsPush|sm|smHidden|smOffset|smPull|smPush|md|mdHidden|mdOffset|mdPull|mdPush|lg|lgHidden|lgOffset|lgPull|lgPush|mode|horizontal|columnClassName)$": {}
           }
         }
       ]
@@ -47011,7 +48919,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47036,6 +48944,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47098,7 +49013,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47185,7 +49100,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|x|y|w|h|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47248,7 +49163,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47311,7 +49226,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47325,7 +49240,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
@@ -47360,14 +49275,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|x|y|w|h|width|height|align|valign|gridClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|x|y|w|h|width|height|align|valign|gridClassName)$": {}
           }
         }
       ]
@@ -47385,7 +49307,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|columnClassName|width|height)$": {}
           }
         },
         {
@@ -47410,6 +49332,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|columnClassName|width|height|style)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|columnClassName|width|height)$": {}
           }
         },
         {
@@ -47472,7 +49401,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|columnClassName|width|height)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|columnClassName|width|height)$": {}
           }
         },
         {
@@ -47559,7 +49488,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|columnClassName|style)$": {}
           }
         },
         {
@@ -47622,7 +49551,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|columnClassName|width|height|style)$": {}
           }
         },
         {
@@ -47685,7 +49614,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|columnClassName|width|height|style)$": {}
           }
         },
         {
@@ -47699,7 +49628,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|columnClassName|width|height|style)$": {}
           }
         },
         {
@@ -47734,14 +49663,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|columnClassName|width|height)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|columnClassName|width|height|style)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|columnClassName|width|height|style)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|columnClassName|width|height|style)$": {}
           }
         }
       ]
@@ -47759,7 +49695,7 @@
           "$ref": "#/definitions/TplSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tpl|html|text|raw|inline|style|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -47784,6 +49720,13 @@
           "additionalProperties": false,
           "patternProperties": {
             "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inline|src|loop|autoPlay|rates|controls|rowClassName|cellClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AvatarSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|size|shape|icon|text|src|fit|alt|style|badge|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -47846,7 +49789,7 @@
           "$ref": "#/definitions/ContainerSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|bodyClassName|style|wrapperComponent|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -47933,7 +49876,7 @@
           "$ref": "#/definitions/ImageSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|imageClassName|caption|thumbMode|thumbRatio|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|defaultImage|title|name|imageCaption|src|originalSrc|enlargeAble|showDimensions|alt|height|width|imageClassName|thumbClassName|caption|thumbMode|thumbRatio|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -47996,7 +49939,7 @@
           "$ref": "#/definitions/PaginationWrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|inputName|outputName|perPage|position|body|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|showPageInput|maxButtons|inputName|outputName|perPage|position|body|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -48059,7 +50002,7 @@
           "$ref": "#/definitions/SwitchSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|saveImmediately|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|placeholder|trueValue|falseValue|readOnly|onText|offText|saveImmediately|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -48073,7 +50016,7 @@
           "$ref": "#/definitions/TabsSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|tabs|source|tabsClassName|tabsMode|contentClassName|mountOnEnter|unmountOnExit|toolbar|rowClassName|cellClassName)$": {}
           }
         },
         {
@@ -48108,14 +50051,21 @@
           "$ref": "#/definitions/WrapperSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|body|size|style|rowClassName|cellClassName)$": {}
           }
         },
         {
           "$ref": "#/definitions/FormSchema",
           "additionalProperties": false,
           "patternProperties": {
-            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|rowClassName|cellClassName)$": {}
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|title|actions|controls|tabs|fieldSet|data|debug|initApi|initAsyncApi|initFinishedField|initCheckInterval|initFetch|initFetchOn|interval|silentPolling|stopAutoRefreshWhen|persistData|clearPersistDataAfterSubmit|api|feedback|asyncApi|checkInterval|finishedField|resetAfterSubmit|clearAfterSubmit|mode|horizontal|autoFocus|messages|name|panelClassName|primaryField|redirect|reload|submitOnChange|submitOnInit|submitText|target|wrapWithPanel|body|affixFooter|promptPageLeave|promptPageLeaveMessage|rules|rowClassName|cellClassName)$": {}
+          }
+        },
+        {
+          "$ref": "#/definitions/AnchorNavSchema",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(type|className|$ref|disabled|disabledOn|hidden|hiddenOn|visible|visibleOn|links|active|linkClassName|sectionClassName|rowClassName|cellClassName)$": {}
           }
         }
       ]
