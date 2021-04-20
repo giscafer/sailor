@@ -1,0 +1,22 @@
+.login-page {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    .a-Form {
+        width: 400px;
+        height: 400px;
+        .a-Form-label {
+            font-size: 16px;
+        }
+        .a-TextControl-input {
+            width: 280px;
+        }
+        .form-footer {
+            button {
+                width: 100px;
+            }
+        }
+    }
+}

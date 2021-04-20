@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "npm run server && npm run fis3:start",
+        "dev": "npm run fis3:dev",
         "fis3:dev": "fis3 release -cwd ./public",
         "fis3:start": "fis3 server start --www ./public --port 8082 --no-daemon",
         "fis3:server": "fis3 server start --www ./public --port 8082 --no-daemon",

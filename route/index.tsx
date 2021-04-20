@@ -3,11 +3,12 @@ import {ToastComponent, AlertComponent, Spinner} from 'amis';
 import {Route, Switch, Redirect, HashRouter as Router} from 'react-router-dom';
 import {observer} from 'mobx-react';
 import {IMainStore} from '../store';
+import Login from './login/Login';
 
 const Preview = React.lazy(() => import('./Preview'));
 const Editor = React.lazy(() => import('./Editor'));
 
-export default observer(function({store}: {store: IMainStore}) {
+export default observer(function ({store}: {store: IMainStore}) {
     return (
         <Router>
             <div className="routes-wrapper">
@@ -17,6 +18,7 @@ export default observer(function({store}: {store: IMainStore}) {
                     <Switch>
                         <Redirect to={`/hello-world`} from={`/`} exact />
                         <Route path="/edit/:id" component={Editor} />
+                        <Route path="/login" component={Login} />
                         <Route component={Preview} />
                     </Switch>
                 </React.Suspense>
