@@ -14,6 +14,9 @@ export default () => {
 
     return (
         <div className="login-page">
+            <div className="logo">
+                <h3>Sailor Low-Code Platform</h3>
+            </div>
             <div className="a-Form a-Form--horizontal">
                 <div className="a-Form-item a-Form-item--horizontal">
                     <label className="a-Form-label a-Form-itemColumn--2">

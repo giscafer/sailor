@@ -1,4 +1,6 @@
-# amis-platform
+# Sailor
+
+水手低码平台（Sailor Low-Code Platform）
 
 基于[amis-editor-demo](http://aisuda.github.io/amis-editor-demo)改造，独立后端的可视化前端后台管理项目编辑器。
 
