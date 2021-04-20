@@ -27,7 +27,7 @@
     "homepage": "https://github.com/giscafer/amis-editor-demo#readme",
     "dependencies": {
         "amis": "^1.1.5",
-        "amis-editor": "2.0.11",
+        "amis-editor": "^2.0.13",
         "axios": "^0.19.0",
         "bootstrap": "3.4.1",
         "copy-to-clipboard": "^3.2.0",

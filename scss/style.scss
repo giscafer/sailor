@@ -86,3 +86,12 @@ html {
     max-height: 100%;
     overflow: auto;
 }
+
+.editor-header {
+    .template {
+        display: inline-block;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
