@@ -49,6 +49,10 @@ export const doPost = (endpoint: string, data: any) => {
                 if (resp.status !== 200) {
                     reject(resp);
                 } else {
+                    const data = resp.data || {};
+                    if (data.status === 401) {
+                        location.replace('/#/login');
+                    }
                     if (resp.data?.status !== 0) {
                         toast.error(resp.data?.msg || '操作失败', '提示');
                     }

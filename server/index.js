@@ -39,7 +39,7 @@ app.use(async (ctx, next) => {
     try {
         await next().catch(err => {
             if (err.status === 401) {
-                ctx.body = {errcode: 401, errmsg: 'Authentication'};
+                ctx.body = {status: 401, msg: '请登录！'};
             } else {
                 throw err;
             }

@@ -19,6 +19,7 @@ export default inject('store')(
         function loginHandle() {
             store.user.login(user).then(() => {
                 (history as any).replace('/hello-world');
+                toast.success('欢迎使用 Sailor');
             });
         }
 

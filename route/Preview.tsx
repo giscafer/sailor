@@ -7,6 +7,8 @@ import {Link} from 'react-router-dom';
 import NotFound from './NotFound';
 import AMISRenderer from '../component/AMISRenderer';
 import AddPageModal from '../component/AddPageModal';
+import UserInfo from '../component/common/UserInfo';
+import {sortedIndex} from 'lodash';
 
 function isActive(link: any, location: any) {
     const ret = matchPath(location.pathname, {
@@ -20,7 +22,16 @@ function isActive(link: any, location: any) {
 
 export default inject('store')(
     observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
+        // 检查用户登录情况
+        store.user.getUserInfo().then(userInfo => {
+            if (!userInfo) {
+                history.replace('/login');
+            }
+            console.log(store.user);
+        });
+
         function renderHeader() {
+            console.log('store.user=', store.user);
             return (
                 <div>
                     <div className={`a-Layout-brandBar`}>
@@ -28,12 +39,12 @@ export default inject('store')(
                             <i className="glyphicon glyphicon-align-justify"></i>
                         </button>
                         <div className={`a-Layout-brand`}>
-                            <i className="fa fa-paw"></i>
-                            <span className="hidden-folded m-l-sm">AMIS 编辑器</span>
+                            <i className="fa fa-code"></i>
+                            <span className="hidden-folded m-l-sm">Sailor 低码平台</span>
                         </div>
                     </div>
                     <div className={`a-Layout-headerBar`}>
-                        <div className="hidden-xs p-t-sm pull-right">
+                        <div className="hidden-xs p-t-sm pull-left">
                             <Button size="sm" className="m-r-xs" level="success" disabled disabledTip="Todo...">
                                 全部导出
                             </Button>
@@ -41,6 +52,13 @@ export default inject('store')(
                                 新增页面
                             </Button>
                         </div>
+                        <UserInfo
+                            user={store.user}
+                            onLogout={() => {
+                                store.user.logout();
+                                history.replace('/login');
+                            }}
+                        />
                     </div>
                 </div>
             );
