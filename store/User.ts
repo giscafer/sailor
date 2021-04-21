@@ -31,7 +31,6 @@ export const UserStore = types
             }
         });
         const getUserInfo = flow(function* () {
-            console.log(1);
             try {
                 const userInfo: any = yield doGet('/api/auth/user');
                 const {username, name} = userInfo;

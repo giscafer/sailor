@@ -17,7 +17,9 @@ export default inject('store')(
             password: ''
         };
         function loginHandle() {
-            store.user.login(user);
+            store.user.login(user).then(() => {
+                (history as any).replace('/hello-world');
+            });
         }
 
         return (
