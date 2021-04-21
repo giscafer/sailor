@@ -1,28 +1,30 @@
 {
-  "name": "amis-server",
-  "version": "1.0.0",
-  "description": "amis 辅助服务",
-  "main": "index.js",
-  "scripts": {
-    "test": "test"
-  },
-  "keywords": [
-    "amis"
-  ],
-  "author": "giscafer",
-  "license": "MIT",
-  "dependencies": {
-    "consola": "^2.15.3",
-    "crypto": "^1.0.1",
-    "jsonwebtoken": "^8.5.1",
-    "koa": "^2.13.1",
-    "koa-bodyparser": "^4.3.0",
-    "koa-jwt": "^4.0.1",
-    "koa-router": "^10.0.0",
-    "log4js": "^6.3.0",
-    "mongoose": "^5.12.5"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
-  }
+    "name": "amis-server",
+    "version": "1.0.0",
+    "description": "amis 辅助服务",
+    "main": "index.js",
+    "scripts": {
+        "test": "test",
+        "start": "./node_modules/.bin/nodemon ./index.js"
+    },
+    "keywords": [
+        "amis"
+    ],
+    "author": "giscafer",
+    "license": "MIT",
+    "dependencies": {
+        "consola": "^2.15.3",
+        "crypto": "^1.0.1",
+        "jsonwebtoken": "^8.5.1",
+        "koa": "^2.13.1",
+        "koa-bodyparser": "^4.3.0",
+        "koa-jwt": "^4.0.1",
+        "koa-router": "^10.0.0",
+        "koa2-cors": "^2.0.6",
+        "log4js": "^6.3.0",
+        "mongoose": "^5.12.5"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    }
 }

@@ -9,15 +9,16 @@ const url_filter = function (pattern) {
         } catch (error) {
             ctx.status = 200;
             ctx.body = {
-                errcode: error.code ? error.code : 1,
-                errmsg: error.message
+                status: error.code ? error.code : 1,
+                msg: error.message || '操作失败'
             };
             throw error;
         }
         if (reg.test(ctx.originalUrl)) {
             if (ctx.body && ctx.body.original) return (ctx.body = ctx.body.body);
             ctx.body = {
-                success: true,
+                status: 0,
+                msg: '操作成功',
                 data: ctx.body
             };
         }

@@ -7,9 +7,9 @@
         "start": "npm run server && npm run fis3:start",
         "dev": "npm run fis3:dev",
         "fis3:dev": "fis3 release -cwd ./public",
-        "fis3:start": "fis3 server start --www ./public --port 8082 --no-daemon",
+        "client:start": "fis3 server start --www ./public --port 8082 --no-daemon",
         "fis3:server": "fis3 server start --www ./public --port 8082 --no-daemon",
-        "server": "./server/node_modules/.bin/nodemon ./server/index.js",
+        "server:start": "./server/node_modules/.bin/nodemon ./server/index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "gh-pages": "rm -rf gh-pages && fis3 release gh-pages -c && cp CNAME ./gh-pages",
         "deploy-gh-pages": "git subtree push --prefix gh-pages origin gh-pages"
