@@ -82,6 +82,7 @@ async function start() {
     const port = config.port;
 
     app.use(require('./middleware/resformat')('^/api'));
+    // app.use(require('./middleware/getUser')());
 
     const api = require('./routes/api');
     app.use(api.routes(), api.allowedMethods());

@@ -1,6 +1,7 @@
 import {types, getEnv, applySnapshot, getSnapshot} from 'mobx-state-tree';
 import {PageStore} from './Page';
 import {when, reaction} from 'mobx';
+import {UserStore} from './User';
 let pagIndex = 1;
 export const MainStore = types
     .model('MainStore', {
@@ -17,6 +18,7 @@ export const MainStore = types
                 }
             }
         ]),
+        user: types.optional(UserStore, {}),
         theme: 'default',
         asideFixed: true,
         asideFolded: false,

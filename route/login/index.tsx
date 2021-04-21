@@ -8,19 +8,16 @@ import React from 'react';
 import {observer, inject} from 'mobx-react';
 import {RouteComponentProps, matchPath, Switch, Route} from 'react-router';
 import {IMainStore} from '../../store';
-import {doPost} from '../../utils/fetcher';
 import './style.scss';
 
 export default inject('store')(
     observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
+        const user = {
+            username: '',
+            password: ''
+        };
         function loginHandle() {
-            doPost('/api/auth/login', {})
-                .then((res: any) => {
-                    console.log(res);
-                })
-                .catch(() => {
-                    toast.success('登陆失败', '错误');
-                });
+            store.user.login(user);
         }
 
         return (
@@ -34,7 +31,13 @@ export default inject('store')(
                             <span>账号:</span>
                         </label>
                         <div className="a-TextControl-input">
-                            <input placeholder="账号" className="" />
+                            <input
+                                placeholder="账号"
+                                className=""
+                                onChange={e => {
+                                    user.username = e.currentTarget.value;
+                                }}
+                            />
                         </div>
                     </div>
                     <div className="a-Form-item a-Form-item--horizontal">
@@ -42,7 +45,13 @@ export default inject('store')(
                             <span>密码:</span>
                         </label>
                         <div className="a-TextControl-input">
-                            <input type="password" placeholder="密码" />
+                            <input
+                                type="password"
+                                placeholder="密码"
+                                onChange={e => {
+                                    user.password = e.currentTarget.value;
+                                }}
+                            />
                         </div>
                     </div>
                     <div className="form-footer text-center">

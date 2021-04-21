@@ -1,6 +1,7 @@
 const {mongoose} = require('../config/db');
 const Schema = mongoose.Schema;
 const schema = new Schema({
+    name: String,
     username: {
         type: String,
         required: true
@@ -30,11 +31,12 @@ module.exports = {
         getUser: async userId => {
             try {
                 const user = await Auth.findOne({_id: userId}, {username: 1});
-                const robot = await Robot.findOne({user: user._id}, {id: 1});
+                // const robot = await Projects.findOne({user: user._id}, {id: 1});
                 return {
                     username: user.username,
-                    robotId: (robot && robot.id) || null,
-                    robot_id: (robot && robot._id) || null
+                    name: user.name || user.username
+                    // robotId: (robot && robot.id) || null,
+                    // robot_id: (robot && robot._id) || null
                 };
             } catch (err) {
                 throw err;
@@ -46,8 +48,18 @@ module.exports = {
 const init = async () => {
     const exists = await Auth.exists({});
     if (!exists) {
-        await Auth.create({username: 'admin', salt: '123456', password: encryptPassword('123456', '111111')});
-        await Auth.create({username: 'guest', salt: '123456', password: encryptPassword('123456', '111111')});
+        await Auth.create({
+            name: '管理员',
+            username: 'admin',
+            salt: '123456',
+            password: encryptPassword('123456', '111111')
+        });
+        await Auth.create({
+            name: '游客',
+            username: 'guest',
+            salt: '123456',
+            password: encryptPassword('123456', '111111')
+        });
     }
 };
 init();
