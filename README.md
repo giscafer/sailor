@@ -9,6 +9,8 @@
 -   服务端：Koa + MongoDB
 -   前端：React + Amis
 
+![](./architecture.png)
+
 ## 本地运行
 
 1. `npm i` 安装依赖
