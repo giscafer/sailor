@@ -10,7 +10,7 @@ export default schema2component(
                 {
                     type: 'text',
                     label: '项目名称',
-                    name: 'label',
+                    name: 'name',
                     validations: {
                         maxLength: 20
                     },
@@ -19,7 +19,7 @@ export default schema2component(
 
                 {
                     type: 'text',
-                    label: '项目ID',
+                    label: '项目标识',
                     name: 'path',
                     validations: {
                         isUrlPath: true
@@ -27,7 +27,7 @@ export default schema2component(
                     required: true,
                     validate(values: any, value: string) {
                         const exists = !!values.pages.filter((item: any) => item.path === value).length;
-                        return exists ? '当前项目ID已被占用，请换一个' : '';
+                        return exists ? '当前项目标识已被占用，请换一个' : '';
                     }
                 },
 

@@ -1,3 +1,4 @@
+const moment = require('moment');
 const {mongoose} = require('../config/db');
 const Schema = mongoose.Schema;
 const schema = new Schema({
@@ -8,7 +9,7 @@ const schema = new Schema({
     },
     password: String,
     salt: String,
-    createTime: {type: Date, default: new Date()},
+    createTime: {type: String, default: moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')},
     lastLoginT: Date,
     loginIp: String
 });
@@ -30,7 +31,7 @@ module.exports = {
         },
         getUser: async userId => {
             try {
-                const user = await Auth.findOne({_id: userId}, {username: 1});
+                const user = await Auth.findOne({_id: userId});
                 // const robot = await Projects.findOne({user: user._id}, {id: 1});
                 return {
                     username: user.username,

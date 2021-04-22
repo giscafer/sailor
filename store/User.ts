@@ -65,6 +65,7 @@ export const UserStore = types
                 localStorage.removeItem('authenticated');
             },
             afterCreate() {
+                console.log('afterCreate-user');
                 self.name = localStorage.getItem('authenticated') || '';
                 self.token = localStorage.getItem('sailorToken') || '';
             }

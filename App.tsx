@@ -4,8 +4,8 @@ import {Provider} from 'mobx-react';
 import React from 'react';
 import RootRoute from './route/index';
 import {MainStore} from './store/index';
-import {UserStore} from './store/User';
 import {fetcher, isCancel} from './utils/fetcher';
+import 'amis/scss/helper.scss';
 
 export default function (): JSX.Element {
     const store = ((window as any).store = MainStore.create(

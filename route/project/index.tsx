@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {observer, inject} from 'mobx-react';
 import {IMainStore} from '../../store';
-import {Button, AsideNav, Layout, confirm} from 'amis';
+import {Button, AsideNav, Layout, confirm, toast} from 'amis';
 import {RouteComponentProps, matchPath, Switch, Route} from 'react-router';
 import {Link} from 'react-router-dom';
-import NotFound from '../NotFound';
+import Empty from '../../component/common/Empty';
+import Card from '../../component/common/Card';
 import AMISRenderer from '../../component/AMISRenderer';
 import AddProjectModal from '../../component/AddProjectModal';
 import UserInfo from '../../component/common/UserInfo';
@@ -36,7 +37,7 @@ export default inject('store')(
                     </div>
                     <div className={`a-Layout-headerBar`}>
                         <div className="hidden-xs p-t-sm pull-left">
-                            <Button size="sm" level="info" onClick={() => store.setAddPageIsOpen(true)}>
+                            <Button size="sm" level="info" onClick={() => store.project.setAddModelOpen(true)}>
                                 新增项目
                             </Button>
                         </div>
@@ -129,16 +130,22 @@ export default inject('store')(
             );
         }
 
-        function handleConfirm(value: {label: string; icon: string; path: string}) {
-            store.addPage({
+        function handleConfirm(value: {name: string; path: string; icon: string}) {
+            store.project.add({
                 ...value,
-                schema: {
-                    type: 'page',
-                    title: value.label,
-                    body: '这是你刚刚新增的页面。'
-                }
+                pages: JSON.stringify([
+                    {
+                        label: '测试页面',
+                        path: 'hello-world',
+                        schema: {
+                            type: 'page',
+                            title: '测试页面',
+                            body: '这是你刚刚新增的页面。'
+                        }
+                    }
+                ])
             });
-            store.setAddPageIsOpen(false);
+            store.project.setAddModelOpen(false);
         }
 
         return (
@@ -148,7 +155,7 @@ export default inject('store')(
                 folded={store.asideFolded}
                 offScreen={store.offScreen}
             >
-                <Switch>
+                {/* <Switch>
                     {store.pages.map(item => (
                         <Route
                             key={item.id}
@@ -156,11 +163,31 @@ export default inject('store')(
                             render={() => <AMISRenderer schema={item.schema} />}
                         />
                     ))}
-                    <Route component={NotFound} />
-                </Switch>
+                    <Route component={Empty} />
+                </Switch> */}
+                <div className="flex justify-center justify-items-center ">
+                    {/* <h3 className="text-green-700">text-green-700</h3> */}
+                    {store.project.projectList.map(item => (
+                        <div className="w-1/5 m-10" key={item.path}>
+                            <Card
+                                onDelete={() => {
+                                    console.log('onDelete', item);
+                                    store.project.deleteProject(item);
+                                }}
+                                onEdit={() => {
+                                    toast.info('edit');
+                                }}
+                            >
+                                {item.name}
+                            </Card>
+                        </div>
+                    ))}
+                    {!store.project.projectList.length && <Empty />}
+                </div>
+
                 <AddProjectModal
-                    show={store.addPageIsOpen}
-                    onClose={() => store.setAddPageIsOpen(false)}
+                    show={store.project.addModelIsOpen}
+                    onClose={() => store.project.setAddModelOpen(false)}
                     onConfirm={handleConfirm}
                     pages={store.pages.concat()}
                 />

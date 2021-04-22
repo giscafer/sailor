@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 module.exports = {
     connect: () => {
-        if (mongoUrl.includes('127.0.0.1')) {
+        if (mongoUrl.includes('localhost')) {
             // 本地
             mongoose.connect(mongoUrl, {
                 useNewUrlParser: true,
