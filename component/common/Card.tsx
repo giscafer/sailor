@@ -1,14 +1,12 @@
 import React from 'react';
+import {defaultProjectCoverImg} from '../../config';
 export default (props: any) => {
-    const {name, path, createTime, description, onDelete = () => {}, onEdit = () => {}} = props;
+    const {name, path, createTime, description, coverImg, onDelete = () => {}, onEdit = () => {}} = props;
     return (
         <div className="a-Card">
             <div className="a-Card-heading">
                 <span className="a-Card-avtar pull-left thumb-md avatar b-3x m-r">
-                    <img
-                        className="a-Card-img"
-                        src="http://hiphotos.baidu.com/fex/%70%69%63/item/c9fcc3cec3fdfc03ccabb38edd3f8794a4c22630.jpg"
-                    />
+                    <img className="a-Card-img" src={coverImg || defaultProjectCoverImg} />
                 </span>
                 <div className="a-Card-meta">
                     <div className="a-Card-title">
@@ -23,14 +21,14 @@ export default (props: any) => {
                     </div>
                     <div className="a-Card-desc">
                         <span className="a-TplField">
-                            <span>{description}</span>
+                            <span>{path}</span>
                         </span>
                     </div>
                 </div>
             </div>
-            <div className="a-Card-body">
+            <div className="a-Card-body" style={{minHeight: '50px'}}>
                 <span className="a-TplField">
-                    <span>{path}</span>
+                    <span>{description}</span>
                 </span>
             </div>
             <div className="a-Card-actions">

@@ -30,6 +30,15 @@ export default schema2component(
                         return exists ? '当前项目标识已被占用，请换一个' : '';
                     }
                 },
+                {
+                    type: 'textarea',
+                    label: '项目描述',
+                    name: 'description',
+                    maxLength: 200,
+                    validations: {
+                        maxLength: 200
+                    }
+                },
 
                 {
                     type: 'icon-picker',

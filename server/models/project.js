@@ -7,6 +7,7 @@ const schema = new Schema({
     coverImg: String,
     name: String,
     path: String, // 项目标识
+    description: String, // 项目描述
     pages: String, // 项目内容 json string
     creator: String, // 创建人，name
     userId: String, // userId

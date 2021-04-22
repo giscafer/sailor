@@ -165,10 +165,10 @@ export default inject('store')(
                     ))}
                     <Route component={Empty} />
                 </Switch> */}
-                <div className="flex justify-center justify-items-center ">
+                <div className="flex justify-center justify-items-center flex-wrap">
                     {/* <h3 className="text-green-700">text-green-700</h3> */}
                     {store.project.projectList.map(item => (
-                        <div className="w-1/5 m-10" key={item.path}>
+                        <div className="w-1/4 mt-10 mx-5 -mb-5" key={item.path}>
                             <Card
                                 onDelete={() => {
                                     console.log('onDelete', item);
@@ -177,6 +177,7 @@ export default inject('store')(
                                 onEdit={() => {
                                     toast.info('edit');
                                 }}
+                                {...item}
                             >
                                 {item.name}
                             </Card>

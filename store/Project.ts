@@ -1,12 +1,15 @@
 import {toast} from 'amis';
 import {types, flow} from 'mobx-state-tree';
+import {defaultProjectCoverImg} from '../config';
 import {doGet, doPost} from '../utils/fetcher';
 
 const Project = types.model({
     name: types.string,
-    path: types.string,
-    pages: types.string,
-    createTime: types.string,
+    path: types.union(types.undefined, types.string),
+    description: types.union(types.undefined, types.string),
+    pages: types.union(types.undefined, types.string),
+    coverImg: types.union(types.undefined, types.string),
+    createTime: types.union(types.undefined, types.string),
     id: types.string,
     userId: types.string
 });
@@ -23,7 +26,8 @@ export const ProjectStore = types
             return Project.create({
                 ...p,
                 id: p._id,
-                createTime: p.createTime || ''
+                createTime: p.createTime || '',
+                coverImg: p.coverImg || defaultProjectCoverImg
             });
         }
         function setAddModelOpen(isOpened: boolean) {
