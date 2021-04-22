@@ -59,7 +59,10 @@ export const doPost = (endpoint: string, data: any) => {
                     resolve(resp.data?.data || {});
                 }
             })
-            .catch((err: AxiosError) => reject(err));
+            .catch((err: AxiosError) => {
+                toast.error('服务异常');
+                reject(err);
+            });
     });
 };
 
@@ -79,13 +82,19 @@ export const doGet = (endpoint: string, data: any | null = null) => {
                 if (resp.status !== 200) {
                     reject(resp);
                 } else {
-                    console.log(resp.data);
+                    const data = resp.data || {};
+                    if (data.status === 401) {
+                        location.replace('/#/login');
+                    }
                     if (resp.data?.status !== 0) {
                         toast.error(resp.data?.msg || '操作失败', '提示');
                     }
                     resolve(resp.data?.data || {});
                 }
             })
-            .catch((err: AxiosError) => reject(err));
+            .catch((err: AxiosError) => {
+                toast.error('服务异常');
+                reject(err);
+            });
     });
 };

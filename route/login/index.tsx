@@ -13,13 +13,15 @@ import './style.scss';
 export default inject('store')(
     observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
         const user = {
-            username: '',
-            password: ''
+            username: 'admin',
+            password: '111111'
         };
         function loginHandle() {
-            store.user.login(user).then(() => {
-                (history as any).replace('/hello-world');
-                toast.success('欢迎使用 Sailor');
+            store.user.login(user).then(isLogin => {
+                if (isLogin) {
+                    (history as any).replace('/hello-world');
+                    toast.success('欢迎使用 Sailor');
+                }
             });
         }
 

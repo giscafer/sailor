@@ -17,6 +17,7 @@ export const UserStore = types
     .actions(self => {
         const login = flow(function* (user: any) {
             self.state = 'pending';
+            let success = true;
             try {
                 // ... yield can be used in async/await style
                 const res: any = yield doPost('/api/auth/login', user);
@@ -28,7 +29,9 @@ export const UserStore = types
                 // ... including try/catch error handling
                 console.error('Failed to fetch user', error);
                 self.state = 'error';
+                success = false;
             }
+            return success;
         });
         const getUserInfo = flow(function* () {
             let userInfo: any;
