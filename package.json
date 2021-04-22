@@ -4,7 +4,7 @@
     "description": "amis 可视化编辑器",
     "main": "index.js",
     "scripts": {
-        "start": "npm run server && npm run fis3:start",
+        "start": "npm run server && npm run client:start",
         "dev": "npm run fis3:dev",
         "fis3:dev": "fis3 release -cwd ./public",
         "client:start": "fis3 server start --www ./public --port 8082 --no-daemon",

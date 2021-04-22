@@ -2,16 +2,20 @@
 
 水手低码平台（Sailor Low-Code Platform）
 
-基于[amis-editor-demo](http://aisuda.github.io/amis-editor-demo)改造，独立后端的可视化前端后台管理项目编辑器。
+基于[amis-editor-demo](http://aisuda.github.io/amis-editor-demo)改造
 
-服务端基于 Koa + MongoDB
+技术栈：
 
-## 本地运行这个项目
+-   服务端：Koa + MongoDB
+-   前端：React + Amis
+
+## 本地运行
 
 1. `npm i` 安装依赖
 2. `cd server` 进入服务端目录，再 `npm i` 安装服务端依赖
-3. `npm start` 根目录打开服务
-4. `npm run dev` 开始编译，等编译出现时间信息后就可以刷新页面看效果了。
+3. `npm server:start` 跑后端服务
+4. `npm run dev` 编译前端
+5. `npm run client:start` 启动前端，http://localhost:8082/
 
 ## 使用协议
 
