@@ -26,8 +26,9 @@ export default observer(function ({store, history}: {store: IMainStore} & RouteC
                 <AlertComponent key="alert" theme={store.theme} />
                 <React.Suspense fallback={<Spinner overlay className="m-t-lg" size="lg" />}>
                     <Switch>
-                        <Redirect to={`/hello-world`} from={`/`} exact />
+                        <Redirect to={`/project`} from={`/`} exact />
                         <Route path="/project" component={Project} />
+                        <Route path="/views/:id" component={Preview} />
                         <Route path="/edit/:id" component={Editor} />
                         <Route path="/login" component={Login} />
                         <Route component={Preview} />

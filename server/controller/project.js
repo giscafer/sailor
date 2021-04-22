@@ -8,6 +8,14 @@ module.exports = {
             throw err;
         }
     },
+    getProject: async ctx => {
+        try {
+            const result = await model.Dao.getProject({userId: ctx.query.user, id: ctx.params.id});
+            ctx.body = result;
+        } catch (err) {
+            throw err;
+        }
+    },
     add: async ctx => {
         try {
             const result = await model.Dao.add(ctx.request.body);

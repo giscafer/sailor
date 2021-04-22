@@ -3,7 +3,6 @@ const {mongoose} = require('../config/db');
 const {Auth} = require('./auth');
 const Schema = mongoose.Schema;
 const schema = new Schema({
-    id: String, // 项目id
     coverImg: String,
     name: String,
     path: String, // 项目标识
@@ -18,6 +17,15 @@ const Project = mongoose.model('project', schema, 'project');
 module.exports = {
     Project,
     Dao: {
+        getProject: async ({id, userId}) => {
+            try {
+                console.log({userId, _id: id});
+                const result = await Project.findOne({userId, _id: id});
+                return result;
+            } catch (err) {
+                throw err;
+            }
+        },
         list: async userId => {
             try {
                 const result = await Project.find({userId});

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FC, useEffect} from 'react';
 import {observer, inject} from 'mobx-react';
 import {IMainStore} from '../store';
 import {Button, AsideNav, Layout, confirm} from 'amis';
@@ -20,10 +20,18 @@ function isActive(link: any, location: any) {
     return !!ret;
 }
 
+let currentProjectId = '-1';
+
 export default inject('store')(
-    observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
+    observer(function ({store, location, history, match}: {store: IMainStore} & RouteComponentProps<{id: string}>) {
+        const projectId = match.params.id;
+
+        if (projectId !== currentProjectId) {
+            currentProjectId = projectId;
+            store.project.getProject(projectId);
+        }
+
         function renderHeader() {
-            console.log('store.user=', store.user);
             return (
                 <div>
                     <div className={`a-Layout-brandBar`}>

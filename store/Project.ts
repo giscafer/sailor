@@ -38,8 +38,6 @@ export const ProjectStore = types
             let list: any[] = [];
             try {
                 list = yield doGet('/api/project/list');
-
-                console.log('project list=', list);
             } catch (error) {
                 console.error('Failed to get project ', error);
                 self.state = 'error';
@@ -66,13 +64,27 @@ export const ProjectStore = types
 
             return p;
         });
+
+        const getProject = flow(function* (id) {
+            self.state = 'pedding';
+            let result;
+            try {
+                result = yield doGet(`/api/project/info/${id}`);
+            } catch (error) {
+                console.error('Failed to fetch project', error);
+                self.state = 'error';
+            }
+            if (!result?._id) {
+                toast.error(`无法找到id为${id}的项目`);
+            }
+            return result;
+        });
+
         const deleteProject = flow(function* ({id}) {
             self.state = 'pedding';
             let result;
             try {
                 result = yield doPost('/api/project/del', {id});
-
-                console.log('project del id=', id);
             } catch (error) {
                 console.error('Failed to del project', error);
                 self.state = 'error';
@@ -89,6 +101,7 @@ export const ProjectStore = types
         return {
             setAddModelOpen,
             getList,
+            getProject,
             add,
             deleteProject,
             afterCreate() {

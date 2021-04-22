@@ -11,6 +11,7 @@ router.post('/auth/logout', async ctx => {
     ctx.body = null;
 });
 // project
+router.get('/project/info/:id', getUser(), projectCtrl.getProject);
 router.post('/project/add', getUser(), projectCtrl.add);
 router.post('/project/update', getUser(), projectCtrl.update);
 router.get('/project/list', getUser(), projectCtrl.getList);

@@ -66,7 +66,7 @@ export const doPost = (endpoint: string, data: any) => {
     });
 };
 
-export const doGet = (endpoint: string, data: any | null = null) => {
+export const doGet = (endpoint: string, data: any | null = {}) => {
     return new Promise((resolve, reject) => {
         fetcher({
             url: `${BASE_URL}${endpoint}`,
