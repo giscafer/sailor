@@ -1,14 +1,14 @@
 import React from 'react';
 import {observer, inject} from 'mobx-react';
-import {IMainStore} from '../store';
+import {IMainStore} from '../../store';
 import {Button, AsideNav, Layout, confirm} from 'amis';
 import {RouteComponentProps, matchPath, Switch, Route} from 'react-router';
 import {Link} from 'react-router-dom';
-import NotFound from './NotFound';
-import AMISRenderer from '../component/AMISRenderer';
-import AddPageModal from '../component/AddPageModal';
-import UserInfo from '../component/common/UserInfo';
-import {sortedIndex} from 'lodash';
+import NotFound from '../NotFound';
+import AMISRenderer from '../../component/AMISRenderer';
+import AddProjectModal from '../../component/AddProjectModal';
+import UserInfo from '../../component/common/UserInfo';
+import {MENUS} from '../../config';
 
 function isActive(link: any, location: any) {
     const ret = matchPath(location.pathname, {
@@ -23,7 +23,6 @@ function isActive(link: any, location: any) {
 export default inject('store')(
     observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
         function renderHeader() {
-            console.log('store.user=', store.user);
             return (
                 <div>
                     <div className={`a-Layout-brandBar`}>
@@ -37,11 +36,8 @@ export default inject('store')(
                     </div>
                     <div className={`a-Layout-headerBar`}>
                         <div className="hidden-xs p-t-sm pull-left">
-                            <Button size="sm" className="m-r-xs" level="success" disabled disabledTip="Todo...">
-                                全部导出
-                            </Button>
                             <Button size="sm" level="info" onClick={() => store.setAddPageIsOpen(true)}>
-                                新增页面
+                                新增项目
                             </Button>
                         </div>
                         <UserInfo
@@ -57,11 +53,7 @@ export default inject('store')(
         }
 
         function renderAside() {
-            const navigations = store.pages.map(item => ({
-                label: item.label,
-                path: `/${item.path}`,
-                icon: item.icon
-            }));
+            const navigations = MENUS;
             const paths = navigations.map(item => item.path);
 
             return (
@@ -69,7 +61,7 @@ export default inject('store')(
                     key={store.asideFolded ? 'folded-aside' : 'aside'}
                     navigations={[
                         {
-                            label: '导航',
+                            label: '菜单',
                             children: navigations
                         }
                     ]}
@@ -107,35 +99,6 @@ export default inject('store')(
                                 />
                             );
                         }
-
-                        link.active ||
-                            children.push(
-                                <i
-                                    key="delete"
-                                    data-tooltip="删除"
-                                    data-position="bottom"
-                                    className={'navbtn fa fa-times'}
-                                    onClick={(e: React.MouseEvent) => {
-                                        e.preventDefault();
-                                        confirm('确认要删除').then(confirmed => {
-                                            confirmed && store.removePageAt(paths.indexOf(link.path));
-                                        });
-                                    }}
-                                />
-                            );
-
-                        children.push(
-                            <i
-                                key="edit"
-                                data-tooltip="编辑"
-                                data-position="bottom"
-                                className={'navbtn fa fa-pencil'}
-                                onClick={(e: React.MouseEvent) => {
-                                    e.preventDefault();
-                                    history.push(`/edit/${paths.indexOf(link.path)}`);
-                                }}
-                            />
-                        );
 
                         children.push(
                             <span key="label" className={cx('AsideNav-itemLabel')}>
@@ -195,7 +158,7 @@ export default inject('store')(
                     ))}
                     <Route component={NotFound} />
                 </Switch>
-                <AddPageModal
+                <AddProjectModal
                     show={store.addPageIsOpen}
                     onClose={() => store.setAddPageIsOpen(false)}
                     onConfirm={handleConfirm}

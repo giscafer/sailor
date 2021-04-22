@@ -3,13 +3,13 @@ import {schema2component} from './AMISRenderer';
 export default schema2component(
     {
         type: 'dialog',
-        title: '新增页面',
+        title: '新增项目',
         body: {
             type: 'form',
             controls: [
                 {
                     type: 'text',
-                    label: '页面名称',
+                    label: '项目名称',
                     name: 'label',
                     validations: {
                         maxLength: 20
@@ -19,7 +19,7 @@ export default schema2component(
 
                 {
                     type: 'text',
-                    label: '路径',
+                    label: '项目ID',
                     name: 'path',
                     validations: {
                         isUrlPath: true
@@ -27,7 +27,7 @@ export default schema2component(
                     required: true,
                     validate(values: any, value: string) {
                         const exists = !!values.pages.filter((item: any) => item.path === value).length;
-                        return exists ? '当前路径已被占用，请换一个' : '';
+                        return exists ? '当前项目ID已被占用，请换一个' : '';
                     }
                 },
 

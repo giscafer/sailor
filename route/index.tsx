@@ -1,14 +1,24 @@
 import React from 'react';
 import {ToastComponent, AlertComponent, Spinner} from 'amis';
-import {Route, Switch, Redirect, HashRouter as Router} from 'react-router-dom';
+import {Route, Switch, Redirect, HashRouter as Router, RouteComponentProps} from 'react-router-dom';
 import {observer} from 'mobx-react';
 import {IMainStore} from '../store';
 import Login from './login';
+import Project from './project';
 
 const Preview = React.lazy(() => import('./Preview'));
 const Editor = React.lazy(() => import('./Editor'));
 
-export default observer(function ({store}: {store: IMainStore}) {
+export default observer(function ({store, history}: {store: IMainStore} & RouteComponentProps) {
+    // TODO: 改掉路由模式会出问题
+    if (!location.hash?.startsWith('#/login')) {
+        // 检查用户登录情况
+        store.user.getUserInfo().then(userInfo => {
+            if (!userInfo) {
+                history.replace('/login');
+            }
+        });
+    }
     return (
         <Router>
             <div className="routes-wrapper">
@@ -17,6 +27,7 @@ export default observer(function ({store}: {store: IMainStore}) {
                 <React.Suspense fallback={<Spinner overlay className="m-t-lg" size="lg" />}>
                     <Switch>
                         <Redirect to={`/hello-world`} from={`/`} exact />
+                        <Route path="/project" component={Project} />
                         <Route path="/edit/:id" component={Editor} />
                         <Route path="/login" component={Login} />
                         <Route component={Preview} />

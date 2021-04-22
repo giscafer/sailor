@@ -19,7 +19,7 @@ export default inject('store')(
         function loginHandle() {
             store.user.login(user).then(isLogin => {
                 if (isLogin) {
-                    (history as any).replace('/hello-world');
+                    (history as any).replace('/project');
                     toast.success('欢迎使用 Sailor');
                 }
             });
