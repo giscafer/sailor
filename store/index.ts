@@ -84,10 +84,14 @@ export const MainStore = types
 
         function removePageAt(index: number) {
             self.pages.splice(index, 1);
+            // 更新数据库
+            updateProject();
         }
 
         function updatePageSchemaAt(index: number) {
             self.pages[index].updateSchema(self.schema);
+            // 更新数据库
+            updateProject();
         }
 
         function updateSchema(value: any) {
@@ -102,9 +106,13 @@ export const MainStore = types
             self.isMobile = value;
         }
 
-        async function updateProject(data: {label: string; path: string; icon?: string; schema?: any}) {
+        async function updateProject(
+            data: {label: string; path: string; icon?: string; schema?: any} | undefined = undefined
+        ) {
             const project: any = self.currentProject;
-            self.pages.push(createPage(data));
+            if (data) {
+                self.pages.push(createPage(data));
+            }
             project.pages = JSON.stringify(self.pages);
             try {
                 const updateRes = await self.project.update(project);
