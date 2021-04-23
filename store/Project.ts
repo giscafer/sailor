@@ -3,14 +3,14 @@ import {types, flow} from 'mobx-state-tree';
 import {defaultProjectCoverImg} from '../config';
 import {doGet, doPost} from '../utils/fetcher';
 
-const Project = types.model({
+export const Project = types.model({
     name: types.string,
     path: types.union(types.undefined, types.string),
     description: types.union(types.undefined, types.string),
     pages: types.union(types.undefined, types.string),
     coverImg: types.union(types.undefined, types.string),
     createTime: types.union(types.undefined, types.string),
-    id: types.string,
+    id: types.identifier,
     userId: types.string
 });
 
@@ -98,11 +98,31 @@ export const ProjectStore = types
             }
         });
 
+        const update = flow(function* (project) {
+            self.state = 'pedding';
+            let result;
+            try {
+                // console.log('update project=', project);
+                result = yield doPost('/api/project/update', project);
+            } catch (error) {
+                console.error('Failed to update project', error);
+                self.state = 'error';
+            }
+            if (result && result.ok === result.deletedCount) {
+                toast.success('更新成功！');
+                getList();
+                return true;
+            } else {
+                return false;
+            }
+        });
+
         return {
             setAddModelOpen,
             getList,
             getProject,
             add,
+            update,
             deleteProject,
             afterCreate() {
                 getList();

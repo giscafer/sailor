@@ -41,9 +41,7 @@ export const UserStore = types
                 localStorage.setItem('authenticated', name);
                 self.name = name;
                 self.username = username;
-                console.log('userInfo=', userInfo);
             } catch (error) {
-                // ... including try/catch error handling
                 console.error('Failed to get user info', error);
                 self.state = 'error';
             }

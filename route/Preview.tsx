@@ -28,7 +28,7 @@ export default inject('store')(
 
         if (projectId !== currentProjectId) {
             currentProjectId = projectId;
-            store.project.getProject(projectId);
+            store.getProjectInfo(projectId);
         }
 
         function renderHeader() {
@@ -64,10 +64,14 @@ export default inject('store')(
             );
         }
 
+        function genRoutePath(path: string) {
+            return `/views/${projectId}/${path}`;
+        }
+
         function renderAside() {
             const navigations = store.pages.map(item => ({
                 label: item.label,
-                path: `/${item.path}`,
+                path: genRoutePath(item.path),
                 icon: item.icon
             }));
             const paths = navigations.map(item => item.path);
@@ -175,15 +179,18 @@ export default inject('store')(
         }
 
         function handleConfirm(value: {label: string; icon: string; path: string}) {
-            store.addPage({
+            const page = {
                 ...value,
                 schema: {
                     type: 'page',
                     title: value.label,
                     body: '这是你刚刚新增的页面。'
                 }
+            };
+
+            store.updateProject(page).then(() => {
+                store.setAddPageIsOpen(false);
             });
-            store.setAddPageIsOpen(false);
         }
 
         return (
@@ -194,13 +201,15 @@ export default inject('store')(
                 offScreen={store.offScreen}
             >
                 <Switch>
-                    {store.pages.map(item => (
-                        <Route
-                            key={item.id}
-                            path={`/${item.path}`}
-                            render={() => <AMISRenderer schema={item.schema} />}
-                        />
-                    ))}
+                    {store.pages.map(item => {
+                        return (
+                            <Route
+                                key={item.id}
+                                path={genRoutePath(item.path)}
+                                render={() => <AMISRenderer schema={item.schema} />}
+                            />
+                        );
+                    })}
                     <Route component={NotFound} />
                 </Switch>
                 <AddPageModal

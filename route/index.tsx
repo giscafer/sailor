@@ -31,7 +31,7 @@ export default observer(function ({store, history}: {store: IMainStore} & RouteC
                         <Route path="/views/:id" component={Preview} />
                         <Route path="/edit/:id" component={Editor} />
                         <Route path="/login" component={Login} />
-                        <Route component={Preview} />
+                        {/* <Route component={Preview} /> */}
                     </Switch>
                 </React.Suspense>
             </div>

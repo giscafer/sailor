@@ -15,4 +15,4 @@ export const MENUS = [
     }
 ];
 
-export const defaultProjectCoverImg = 'http://ww1.sinaimg.cn/large/940e68eegy1gpsnsh314rj20r10r1dhk.jpg';
+export const defaultProjectCoverImg = 'https://raw.sevencdn.com/giscafer/sailor/master/images/cover.png';
