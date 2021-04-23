@@ -28,10 +28,9 @@ export default observer(function ({store, history}: {store: IMainStore} & RouteC
                     <Switch>
                         <Redirect to={`/project`} from={`/`} exact />
                         <Route path="/project" component={Project} />
-                        <Route path="/views/:id" component={Preview} />
-                        <Route path="/edit/:id" component={Editor} />
+                        <Route path="/view/:id" component={Preview} />
+                        <Route path="/edit/:projectId/:id" component={Editor} />
                         <Route path="/login" component={Login} />
-                        {/* <Route component={Preview} /> */}
                     </Switch>
                 </React.Suspense>
             </div>

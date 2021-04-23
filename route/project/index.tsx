@@ -176,7 +176,7 @@ export default inject('store')(
                                 }}
                                 onEdit={() => {
                                     // toast.info('edit');
-                                    history.push(`/views/${item.id}`);
+                                    history.push(`/view/${item.id}`);
                                 }}
                                 {...item}
                             >

@@ -24,9 +24,14 @@ const schemaUrl = `${host}/schema.json`;
 __uri('amis/schema.json');
 
 export default inject('store')(
-    observer(function ({store, location, history, match}: {store: IMainStore} & RouteComponentProps<{id: string}>) {
+    observer(function ({
+        store,
+        location,
+        history,
+        match
+    }: {store: IMainStore} & RouteComponentProps<{id: string; projectId: string}>) {
         const index: number = parseInt(match.params.id, 10);
-
+        const projectId = match.params.projectId;
         if (index !== currentIndex) {
             currentIndex = index;
             store.updateSchema(store.pages[index].schema);
@@ -34,11 +39,11 @@ export default inject('store')(
 
         function save() {
             store.updatePageSchemaAt(index);
-            toast.success('保存成功', '提示');
+            // toast.success('保存成功', '提示');
         }
 
         function exit() {
-            history.push(`/${store.pages[index].path}`);
+            history.push(`/view/${projectId}/${store.pages[index].path}`);
         }
 
         function renderHeader() {

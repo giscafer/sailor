@@ -10,8 +10,10 @@ export const MENUS = [
     },
     {
         label: 'Github',
-        path: '/github',
-        icon: 'fa fa-github'
+        icon: 'fa fa-github',
+        onClick: () => {
+            window.open('https://github.com/giscafer/sailor');
+        }
     }
 ];
 

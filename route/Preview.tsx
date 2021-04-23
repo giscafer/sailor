@@ -30,7 +30,7 @@ export default inject('store')(
             currentProjectId = projectId;
             store.getProjectInfo(projectId);
         }
-
+        const project = getProjectById(projectId);
         function renderHeader() {
             return (
                 <div>
@@ -65,7 +65,11 @@ export default inject('store')(
         }
 
         function genRoutePath(path: string) {
-            return `/views/${projectId}/${path}`;
+            return `/view/${projectId}/${path}`;
+        }
+
+        function getProjectById(id: string) {
+            return store.project.projectList.find(p => p.id === id);
         }
 
         function renderAside() {
@@ -81,7 +85,19 @@ export default inject('store')(
                     key={store.asideFolded ? 'folded-aside' : 'aside'}
                     navigations={[
                         {
-                            label: '导航',
+                            label: `当前：${project?.name}`,
+                            children: [
+                                {
+                                    label: '项目管理',
+                                    path: '/project',
+                                    icon: 'fa fa-folder-open-o',
+                                    isMenu: true,
+                                    disabled: true
+                                }
+                            ]
+                        },
+                        {
+                            label: '页面导航',
                             children: navigations
                         }
                     ]}
@@ -120,7 +136,7 @@ export default inject('store')(
                             );
                         }
 
-                        link.active ||
+                        if (!link.isMenu && !link.active) {
                             children.push(
                                 <i
                                     key="delete"
@@ -135,19 +151,21 @@ export default inject('store')(
                                     }}
                                 />
                             );
-
-                        children.push(
-                            <i
-                                key="edit"
-                                data-tooltip="编辑"
-                                data-position="bottom"
-                                className={'navbtn fa fa-pencil'}
-                                onClick={(e: React.MouseEvent) => {
-                                    e.preventDefault();
-                                    history.push(`/edit/${paths.indexOf(link.path)}`);
-                                }}
-                            />
-                        );
+                        }
+                        if (!link.isMenu) {
+                            children.push(
+                                <i
+                                    key="edit"
+                                    data-tooltip="编辑"
+                                    data-position="bottom"
+                                    className={'navbtn fa fa-pencil'}
+                                    onClick={(e: React.MouseEvent) => {
+                                        e.preventDefault();
+                                        history.push(`/edit/${projectId}/${paths.indexOf(link.path)}`);
+                                    }}
+                                />
+                            );
+                        }
 
                         children.push(
                             <span key="label" className={cx('AsideNav-itemLabel')}>
