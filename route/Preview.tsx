@@ -2,7 +2,7 @@ import React, {FC, useEffect} from 'react';
 import {observer, inject} from 'mobx-react';
 import {IMainStore} from '../store';
 import {Button, AsideNav, Layout, confirm} from 'amis';
-import {RouteComponentProps, matchPath, Switch, Route} from 'react-router';
+import {RouteComponentProps, matchPath, Switch, Route, Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
 import NotFound from './NotFound';
 import AMISRenderer from '../component/AMISRenderer';
@@ -219,6 +219,7 @@ export default inject('store')(
                 offScreen={store.offScreen}
             >
                 <Switch>
+                    <Redirect to={genRoutePath(store.pages[0].path)} from={genRoutePath('')} exact />
                     {store.pages.map(item => {
                         return (
                             <Route
