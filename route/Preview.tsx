@@ -4,7 +4,7 @@ import {IMainStore} from '../store';
 import {Button, AsideNav, Layout, confirm} from 'amis';
 import {RouteComponentProps, matchPath, Switch, Route, Redirect} from 'react-router';
 import {Link} from 'react-router-dom';
-import NotFound from './NotFound';
+import NotFound from '../component/common/NotFound';
 import AMISRenderer from '../component/AMISRenderer';
 import AddPageModal from '../component/AddPageModal';
 import UserInfo from '../component/common/UserInfo';
@@ -45,7 +45,14 @@ export default inject('store')(
                     </div>
                     <div className={`a-Layout-headerBar`}>
                         <div className="hidden-xs p-t-sm pull-left">
-                            <Button size="sm" className="m-r-xs" level="success" disabled disabledTip="Todo...">
+                            <Button
+                                size="sm"
+                                className="m-r-xs"
+                                level="success"
+                                onClick={() => {
+                                    store.project.download();
+                                }}
+                            >
                                 全部导出
                             </Button>
                             <Button size="sm" level="info" onClick={() => store.setAddPageIsOpen(true)}>

@@ -117,6 +117,10 @@ export const ProjectStore = types
             }
         });
 
+        const download = () => {
+            toast.info('开发中，欢迎PR');
+        };
+
         return {
             setAddModelOpen,
             getList,
@@ -124,6 +128,7 @@ export const ProjectStore = types
             add,
             update,
             deleteProject,
+            download,
             afterCreate() {
                 getList();
                 console.log('afterCreate-project');

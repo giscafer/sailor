@@ -19,6 +19,20 @@
 4. `npm run dev` 编译前端
 5. `npm run client:start` 启动前端，http://localhost:8082/
 
+## TODO List
+
+### V1.0
+
+-   [x] 用户登录
+-   [x] 项目列表
+-   [x] 项目新增、删除、查询
+-   [x] 项目编辑
+-   [x] 新增页面、删除页面
+-   [x] 页面预览
+-   [x] amis-editor 编辑后保存页面
+-   [ ] 项目下载
+-   [ ] 下载的项目本地运行正常
+
 ## 使用协议
 
 MIT
