@@ -1,7 +1,7 @@
 const localConfig = {
     port: 3000,
     host: '0.0.0.0',
-    mongoUrl: 'mongodb://localhost:27017/admin',
+    mongoUrl: 'mongodb://localhost:27017/test',
     // mongoUrl: "mongodb://localhost:27017/wxrobot",
     secret: 'giscafer',
     tianApiKey: ''
