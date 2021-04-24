@@ -45,7 +45,7 @@ typings/
 
 # Optional npm cache directory
 .npm
-
+.sailor
 # Optional eslint cache
 .eslintcache
 
