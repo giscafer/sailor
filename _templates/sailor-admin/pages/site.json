@@ -1,0 +1,44 @@
+{
+    "status": 0,
+    "msg": "",
+    "data": {
+        "pages": [
+            {
+                "label": "Home",
+                "url": "/",
+                "redirect": "/index/1"
+            },
+            {
+                "label": "示例",
+                "url": "/console",
+                "rewrite": "/console/index",
+                "icon": "fa fa-cube",
+                "children": [
+                    {
+                        "label": "Console",
+                        "url": "/console/index",
+                        "icon": "fa fa-list",
+                        "schemaApi": "get:/pages/console.json"
+                    }
+                ]
+            },
+            {
+                "label": "分组2",
+                "children": [
+                    {
+                        "label": "用户管理",
+                        "schema": {
+                            "type": "page",
+                            "title": "用户管理",
+                            "body": "页面C"
+                        }
+                    },
+                    {
+                        "label": "外部链接",
+                        "link": "http://github.com/giscafer/sailor"
+                    }
+                ]
+            }
+        ]
+    }
+}
