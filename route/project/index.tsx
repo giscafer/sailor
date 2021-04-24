@@ -1,15 +1,14 @@
-import React, {useEffect} from 'react';
-import {observer, inject} from 'mobx-react';
-import {IMainStore} from '../../store';
-import {Button, AsideNav, Layout, confirm, toast} from 'amis';
-import {RouteComponentProps, matchPath, Switch, Route} from 'react-router';
+import {AsideNav, Button, Layout} from 'amis';
+import {inject, observer} from 'mobx-react';
+import React from 'react';
+import {matchPath, RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
-import Empty from '../../component/common/Empty';
-import Card from '../../component/common/Card';
-import AMISRenderer from '../../component/AMISRenderer';
 import AddProjectModal from '../../component/AddProjectModal';
+import Card from '../../component/common/Card';
+import Empty from '../../component/common/Empty';
 import UserInfo from '../../component/common/UserInfo';
 import {MENUS} from '../../config';
+import {IMainStore} from '../../store';
 
 function isActive(link: any, location: any) {
     const ret = matchPath(location.pathname, {
@@ -22,7 +21,7 @@ function isActive(link: any, location: any) {
 }
 
 export default inject('store')(
-    observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
+    observer(function ({store, location, history, staticContext}: {store: IMainStore} & RouteComponentProps) {
         function renderHeader() {
             return (
                 <div>
@@ -39,6 +38,9 @@ export default inject('store')(
                         <div className="hidden-xs p-t-sm pull-left">
                             <Button size="sm" level="info" onClick={() => store.project.setAddModelOpen(true)}>
                                 新增项目
+                            </Button>
+                            <Button size="sm mx-10" level="default" onClick={() => store.project.getList()}>
+                                刷新列表
                             </Button>
                         </div>
                         <UserInfo
@@ -165,8 +167,14 @@ export default inject('store')(
                     ))}
                     <Route component={Empty} />
                 </Switch> */}
+                <h4 className="text-green-700 text-center h-2">
+                    {store.project.state === 'pending' && (
+                        <span>
+                            <i className="fa fa-spinner fa-spin"></i> 数据加载……
+                        </span>
+                    )}
+                </h4>
                 <div className="flex justify-center justify-items-center flex-wrap">
-                    {/* <h3 className="text-green-700">text-green-700</h3> */}
                     {store.project.projectList.map((item: any) => (
                         <div className="w-1/4 mt-10 mx-5 -mb-5" key={item.path}>
                             <Card
@@ -184,7 +192,13 @@ export default inject('store')(
                             </Card>
                         </div>
                     ))}
-                    {!store.project.projectList.length && <Empty />}
+                    {!store.project.projectList.length && (
+                        <Empty
+                            onRefresh={() => {
+                                store.project.getList();
+                            }}
+                        />
+                    )}
                 </div>
 
                 <AddProjectModal

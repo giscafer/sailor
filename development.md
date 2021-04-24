@@ -5,6 +5,12 @@
 
 ## mongodb
 
+### 服务启动
+
+```bash
+/data/mongodb-3.2/bin/mongod -f --config /data/mongodb-3.2/mongodb.conf
+```
+
 ### 创建用户
 
 ```bash

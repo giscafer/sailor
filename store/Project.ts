@@ -36,18 +36,21 @@ export const ProjectStore = types
 
         const getList = flow(function* () {
             let list: any[] = [];
+            self.state = 'pending';
             try {
-                list = yield doGet('/api/project/list');
+                list = yield doGet('/api/project/list') || [];
+                self.state = 'success';
+                self.projectList.clear();
+                self.projectList.replace(
+                    list.map(p => {
+                        return createProject(p);
+                    })
+                );
             } catch (error) {
                 console.error('Failed to get project ', error);
                 self.state = 'error';
             }
-            self.projectList.clear();
-            self.projectList.replace(
-                list.map(p => {
-                    return createProject(p);
-                })
-            );
+
             return list;
         });
 
@@ -57,6 +60,7 @@ export const ProjectStore = types
             try {
                 p = yield doPost('/api/project/add', data);
                 self.projectList.push(createProject(p));
+                self.state = 'success';
             } catch (error) {
                 console.error('Failed to add project', error);
                 self.state = 'error';
@@ -70,6 +74,7 @@ export const ProjectStore = types
             let result;
             try {
                 result = yield doGet(`/api/project/info/${id}`);
+                self.state = 'success';
             } catch (error) {
                 console.error('Failed to fetch project', error);
                 self.state = 'error';
@@ -85,6 +90,7 @@ export const ProjectStore = types
             let result;
             try {
                 result = yield doPost('/api/project/del', {id});
+                self.state = 'success';
             } catch (error) {
                 console.error('Failed to del project', error);
                 self.state = 'error';
@@ -104,6 +110,7 @@ export const ProjectStore = types
             try {
                 // console.log('update project=', project);
                 result = yield doPost('/api/project/update', project);
+                self.state = 'success';
             } catch (error) {
                 console.error('Failed to update project', error);
                 self.state = 'error';
@@ -129,6 +136,9 @@ export const ProjectStore = types
             update,
             deleteProject,
             download,
+            afterAttach() {
+                console.log('onAttach-project');
+            },
             afterCreate() {
                 getList();
                 console.log('afterCreate-project');

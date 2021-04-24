@@ -19,6 +19,11 @@ export default observer(function ({store, history}: {store: IMainStore} & RouteC
             }
         });
     }
+    if (location.hash?.startsWith('#/project')) {
+        store.project.getList().then(() => {
+            console.log('getList');
+        });
+    }
     return (
         <Router>
             <div className="routes-wrapper">
