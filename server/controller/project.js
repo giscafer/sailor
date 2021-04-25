@@ -77,6 +77,7 @@ module.exports = {
             'Content-Type': 'application/octet-stream',
             'Content-Disposition': `attachment; filename=${fileName}`
         });
+        console.log('file=', file);
         ctx.body = fs.createReadStream(file);
     }
 };
