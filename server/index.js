@@ -1,7 +1,6 @@
 const Koa = require('koa');
 const consola = require('consola');
 const fs = require('fs');
-
 const bodyParser = require('koa-bodyparser');
 const jwtKoa = require('koa-jwt');
 const cors = require('koa2-cors');
@@ -27,7 +26,7 @@ app.use(
         credentials: true,
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
-        exposeHeaders: ['WWW-Authenticate', 'Server-Authorization']
+        exposeHeaders: ['WWW-Authenticate', 'Server-Authorization', 'Content-Disposition']
     })
 );
 
@@ -53,7 +52,7 @@ app.use(async (ctx, next) => {
 // jwt
 app.use(
     jwtKoa({secret: config.secret}).unless({
-        path: [/^\/api\/auth\/login/, /^\/api\/auth\/logout/, /^\/api\/robot\/login/, /^((?!\/api).)*$/]
+        path: [/^\/api\/auth\/login/, /^\/api\/auth\/logout/, /^\/api\/project\/file/, /^((?!\/api).)*$/]
     })
 );
 // connect db
@@ -81,17 +80,9 @@ async function start() {
     const port = config.port;
 
     app.use(require('./middleware/resformat')('^/api'));
-    // app.use(require('./middleware/getUser')());
 
     const api = require('./routes/api');
     app.use(api.routes(), api.allowedMethods());
-
-    // app.use(ctx => {
-    //     ctx.status = 200;
-    //     ctx.respond = false;
-    //     ctx.req.ctx = ctx;
-    //     nuxt.render(ctx.req, ctx.res);
-    // });
 
     app.listen(port, host);
 

@@ -1,6 +1,8 @@
 import {toast} from 'amis';
-import {types, flow} from 'mobx-state-tree';
+import {saveAs} from 'file-saver';
+import {flow, types} from 'mobx-state-tree';
 import {defaultProjectCoverImg} from '../config';
+import {toArrayBuffer} from '../utils';
 import {doGet, doPost} from '../utils/fetcher';
 
 export const Project = types.model({
@@ -129,11 +131,15 @@ export const ProjectStore = types
             self.downloadLoading = true;
             let result;
             try {
-                result = yield doPost('/api/project/download', {id});
+                result = yield doPost('/api/project/exportZip', {id}, {responseType: 'blob'});
+                saveAs(result.content, result.filename);
+                toast.success('导出成功！');
             } catch (error) {
-                console.error('Failed to update project', error);
+                console.error('Failed to download project', error);
+                toast.success('导出失败！');
             }
             self.downloadLoading = false;
+
             return result;
         });
 

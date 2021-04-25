@@ -7,8 +7,10 @@ const directoryPath = path.join(__dirname, '../../', '_templates/sailor-admin');
 /**
  * 打包下载
  * @param {String} projectPath 项目路径
+ * @param {String} templatePath 模板路径
+ * @param {Function} cb 回调方法
  */
-function archiverFile(projectPath, templatePath) {
+function archiverFile(projectPath, templatePath, cb) {
     // 临时存放目录
     if (!projectPath || !templatePath) {
         return;
@@ -18,16 +20,19 @@ function archiverFile(projectPath, templatePath) {
         zlib: {level: 9} // Sets the compression level.
     });
 
-    output.on('close', function () {
+    output.on('close', () => {
         console.log(archive.pointer() + ' total bytes', projectPath);
         console.log('archiver has been finalized and the output file descriptor has closed.');
+        if (cb) {
+            cb(`${templatePath}.zip`);
+        }
     });
 
-    output.on('end', function () {
+    output.on('end', () => {
         console.log('Data has been drained');
     });
 
-    archive.on('warning', function (err) {
+    archive.on('warning', err => {
         console.log(err);
         if (err.code === 'ENOENT') {
             // log warning
@@ -38,7 +43,7 @@ function archiverFile(projectPath, templatePath) {
     });
 
     // good practice to catch this error explicitly
-    archive.on('error', function (err) {
+    archive.on('error', err => {
         throw err;
     });
 
@@ -56,7 +61,7 @@ function archiverFile(projectPath, templatePath) {
  */
 function ensureFileDir(userPath = '', projectPath = '') {
     // 临时用户目录
-    const tempUserPath = path.join(__dirname, '../../', '.sailor', userPath);
+    const tempUserPath = path.join(__dirname, '../', '.sailor', userPath);
     // 项目目录
     const tempProjectPath = path.join(tempUserPath, projectPath);
     // 模板目录
@@ -67,8 +72,8 @@ function ensureFileDir(userPath = '', projectPath = '') {
         fs.unlinkSync(tempTemplatePath);
     } catch (error) {}
     fs.copySync(directoryPath, tempTemplatePath);
-
-    return {projectPath: tempProjectPath, templatePath: tempTemplatePath};
+    const reactivePath = `.sailor${tempTemplatePath.replace(path.resolve('.sailor'), '')}`;
+    return {projectPath: tempProjectPath, templatePath: tempTemplatePath, reactivePath};
 }
 /**
  * 生成页面json文件
@@ -77,13 +82,17 @@ function ensureFileDir(userPath = '', projectPath = '') {
  * @param {Array<any>} pages 页面schema数组
  */
 function genPageSchemaJson(username, project, pages = []) {
-    const {projectPath, templatePath} = ensureFileDir(username, project);
-    const jsonFilePath = path.join(templatePath, 'pages');
-    for (const page of pages) {
-        fs.outputJsonSync(`${jsonFilePath}/${page.path}.json`, page);
-    }
-    archiverFile(projectPath, templatePath);
-    console.log('项目生成成功！');
+    return new Promise(resolve => {
+        const {projectPath, templatePath, reactivePath} = ensureFileDir(username, project);
+        const jsonFilePath = path.join(templatePath, 'pages');
+        for (const page of pages) {
+            fs.outputJsonSync(`${jsonFilePath}/${page.path}.json`, page);
+        }
+        archiverFile(projectPath, templatePath, file => {
+            resolve({file: `${reactivePath}.zip`, fileName: `sailor-admin-${project}.zip`});
+            console.log('项目生成成功！');
+        });
+    });
 }
 
 module.exports = {

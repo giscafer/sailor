@@ -1,3 +1,4 @@
+const fs = require('fs-extra');
 const {genPageSchemaJson} = require('../utils/download');
 const model = require('../models/project');
 const authModel = require('../models/auth');
@@ -54,7 +55,7 @@ module.exports = {
             throw err;
         }
     },
-    download: async ctx => {
+    exportZip: async ctx => {
         const {id} = ctx.request.body;
         if (!id) {
             throw new Error('项目id为空');
@@ -69,9 +70,13 @@ module.exports = {
             throw err;
         }
         const pages = JSON.parse(project.pages);
-        // console.log(pages);
-        ctx.body = pages;
+
         // 生成page json 文件
-        genPageSchemaJson(user?.username, project.path, pages);
+        const {file, fileName} = await genPageSchemaJson(user?.username, project.path, pages);
+        ctx.set({
+            'Content-Type': 'application/octet-stream',
+            'Content-Disposition': `attachment; filename=${fileName}`
+        });
+        ctx.body = fs.createReadStream(file);
     }
 };

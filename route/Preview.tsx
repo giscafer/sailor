@@ -49,13 +49,19 @@ export default inject('store')(
                                 size="sm"
                                 className="m-r-xs"
                                 level="success"
+                                disabled={store.project.downloadLoading}
                                 onClick={() => {
                                     store.project.download(projectId);
                                 }}
                             >
-                                导出项目
+                                {store.project.downloadLoading ? '导出中…' : '导出项目'}
                             </Button>
-                            <Button size="sm" level="info" onClick={() => store.setAddPageIsOpen(true)}>
+                            <Button
+                                size="sm"
+                                className="mx-5"
+                                level="info"
+                                onClick={() => store.setAddPageIsOpen(true)}
+                            >
                                 新增页面
                             </Button>
                         </div>

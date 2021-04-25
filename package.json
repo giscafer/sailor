@@ -34,6 +34,7 @@
         "axios": "^0.19.0",
         "bootstrap": "3.4.1",
         "copy-to-clipboard": "^3.2.0",
+        "file-saver": "^2.0.5",
         "mobx": "4.5.0",
         "mobx-react": "5.2.8",
         "mobx-state-tree": "^3.7.0",
@@ -44,6 +45,7 @@
         "react-router-dom": "5.0.1"
     },
     "devDependencies": {
+        "@types/file-saver": "^2.0.2",
         "@types/lodash": "^4.14.123",
         "@types/node": "^11.13.8",
         "@types/qs": "^6.5.3",

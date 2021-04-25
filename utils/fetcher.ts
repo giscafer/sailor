@@ -33,22 +33,33 @@ export const fetcher = ({url, method, data, config}: any) => {
 
 export const isCancel = (e: any) => Axios.isCancel(e);
 
-export const doPost = (endpoint: string, data: any) => {
+export const doPost = (endpoint: string, data: any, config = {}) => {
     return new Promise((resolve, reject) => {
         fetcher({
             url: `${BASE_URL}${endpoint}`,
             method: 'post',
             data,
             config: {
+                ...config,
                 headers: {
                     authorization: getToken()
                 }
             }
         })
             .then((resp: AxiosResponse) => {
+                console.log(resp);
                 if (resp.status !== 200) {
                     reject(resp);
                 } else {
+                    if (resp.config.responseType === 'blob') {
+                        // 附件下载
+                        const disposition = resp.headers['content-disposition'] || '';
+                        resolve({
+                            content: resp.data,
+                            filename: disposition.replace('attachment; filename=', '')
+                        });
+                        return;
+                    }
                     const data = resp.data || {};
                     if (data.status === 401) {
                         location.replace('/#/login');
@@ -82,6 +93,11 @@ export const doGet = (endpoint: string, data: any | null = {}) => {
                 if (resp.status !== 200) {
                     reject(resp);
                 } else {
+                    if (resp.config.responseType === 'blob') {
+                        // 附件下载
+                        resolve(resp.data);
+                        return;
+                    }
                     const data = resp.data || {};
                     if (data.status === 401) {
                         location.replace('/#/login');

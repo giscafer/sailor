@@ -1,7 +1,7 @@
 /*
  * @Desc: 格式化响应数据
  */
-const url_filter = function (pattern) {
+const resFormat = function (pattern) {
     return async (ctx, next) => {
         const reg = new RegExp(pattern);
         try {
@@ -16,13 +16,18 @@ const url_filter = function (pattern) {
         }
         if (reg.test(ctx.originalUrl)) {
             if (ctx.body && ctx.body.original) return (ctx.body = ctx.body.body);
-            ctx.body = {
-                status: 0,
-                msg: '操作成功',
-                data: ctx.body
-            };
+            if (new RegExp('^/api/project/exportZip').test(ctx.originalUrl)) {
+                // 放过文件下载拦截（坑了好久）
+                // console.log(ctx.originalUrl, 1, ctx.body, ctx.params.path);
+            } else {
+                ctx.body = {
+                    status: 0,
+                    msg: '操作成功',
+                    data: ctx.body
+                };
+            }
         }
     };
 };
 
-module.exports = url_filter;
+module.exports = resFormat;
