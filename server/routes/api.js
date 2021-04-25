@@ -3,12 +3,12 @@ const getUser = require('../middleware/getUser');
 const authCtrl = require('../controller/user');
 const projectCtrl = require('../controller/project');
 // const userLogin = require('../middleware/userLogin');
-router.prefix('/api');
+router.prefix('/sailor/api');
 //登录
 router.post('/auth/login', authCtrl.login);
 router.get('/auth/user', getUser(), authCtrl.getUser);
-router.post('/auth/logout', async ctx => {
-    ctx.body = null;
+router.post('/auth/logout', async (ctx) => {
+  ctx.body = null;
 });
 // project
 router.get('/project/info/:id', getUser(), projectCtrl.getProject);

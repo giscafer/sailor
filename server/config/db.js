@@ -1,43 +1,35 @@
-const {mongoUrl} = require('../config');
 const mongoose = require('mongoose');
+const config = require('../config');
+const mongoUrl = config.mongoUrl;
 
 module.exports = {
-    connect: () => {
-        if (mongoUrl.includes('localhost')) {
-            // 本地
-            mongoose.connect(mongoUrl, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                auth: {
-                    authdb: 'admin',
-                    user: 'webgis',
-                    password: 'giscafer'
-                }
-            });
-        }
-        mongoose.connect(mongoUrl, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        mongoose.set('useFindAndModify', false);
-        mongoose.set('useCreateIndex', true);
-        let db = mongoose.connection;
-        mongoose.Promise = global.Promise;
-        db.on('connecting', () => {
-            console.log('数据库连接中……');
-        });
-        db.on('error', err => {
-            console.log('数据库连接出错', err);
-        });
-        db.on('open', () => {
-            console.log('数据库连接成功');
-        });
-        db.on('disconnected', () => {
-            console.log('数据库连接断开');
-        });
-        /*   db.on('timeout', () => {
-            console.log('数据库连接失败，请检查mongod服务是否启动');
-        }); */
-    },
-    mongoose
+  connect: () => {
+    console.log('mongoUrl=', mongoUrl);
+
+    mongoose.connect(mongoUrl, {
+      poolSize: 10,
+      authSource: 'admin',
+      user: config.mongodbUser,
+      pass: config.mongodbPass,
+      useCreateIndex: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
+    let db = mongoose.connection;
+    mongoose.Promise = global.Promise;
+    db.on('connecting', () => {
+      console.log('数据库连接中……');
+    });
+    db.on('error', (err) => {
+      console.log('数据库连接出错', err);
+    });
+    db.on('open', () => {
+      console.log('数据库连接成功');
+    });
+    db.on('disconnected', () => {
+      console.log('数据库连接断开');
+    });
+  },
+  mongoose,
 };
