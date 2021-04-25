@@ -50,10 +50,10 @@ export default inject('store')(
                                 className="m-r-xs"
                                 level="success"
                                 onClick={() => {
-                                    store.project.download();
+                                    store.project.download(projectId);
                                 }}
                             >
-                                全部导出
+                                导出项目
                             </Button>
                             <Button size="sm" level="info" onClick={() => store.setAddPageIsOpen(true)}>
                                 新增页面

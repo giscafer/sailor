@@ -19,7 +19,7 @@ module.exports = {
     Dao: {
         getProject: async ({id, userId}) => {
             try {
-                console.log({userId, _id: id});
+                // console.log({userId, _id: id});
                 const result = await Project.findOne({userId, _id: id});
                 return result;
             } catch (err) {

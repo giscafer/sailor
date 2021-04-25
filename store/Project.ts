@@ -17,6 +17,7 @@ export const Project = types.model({
 export const ProjectStore = types
     .model('ProjectStore', {
         state: '',
+        downloadLoading: false,
         addModelIsOpen: false,
         projectList: types.array(Project)
     })
@@ -124,9 +125,17 @@ export const ProjectStore = types
             }
         });
 
-        const download = () => {
-            toast.info('开发中，欢迎PR');
-        };
+        const download = flow(function* (id) {
+            self.downloadLoading = true;
+            let result;
+            try {
+                result = yield doPost('/api/project/download', {id});
+            } catch (error) {
+                console.error('Failed to update project', error);
+            }
+            self.downloadLoading = false;
+            return result;
+        });
 
         return {
             setAddModelOpen,

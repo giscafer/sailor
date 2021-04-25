@@ -16,6 +16,7 @@ router.post('/project/add', getUser(), projectCtrl.add);
 router.post('/project/update', getUser(), projectCtrl.update);
 router.get('/project/list', getUser(), projectCtrl.getList);
 router.post('/project/del', getUser(), projectCtrl.delete);
+router.post('/project/download', getUser(), projectCtrl.download);
 
 // router.get('/robot/room/:id', userLogin(), robotCtrl.getRoom)
 // router.put('/robot/room/:id', userLogin(), robotCtrl.updateRoom)
