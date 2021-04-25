@@ -13,8 +13,8 @@ import './style.scss';
 export default inject('store')(
     observer(function ({store, location, history}: {store: IMainStore} & RouteComponentProps) {
         const user = {
-            username: 'admin',
-            password: '111111'
+            username: '',
+            password: ''
         };
         function loginHandle() {
             store.user.login(user).then(isLogin => {
@@ -28,7 +28,7 @@ export default inject('store')(
         return (
             <div className="login-page">
                 <div className="logo">
-                    <h3>Sailor Low-Code Platform</h3>
+                    <h3>Sailor 低码平台</h3>
                 </div>
                 <div className="a-Form a-Form--horizontal">
                     <div className="a-Form-item a-Form-item--horizontal">
@@ -37,7 +37,7 @@ export default inject('store')(
                         </label>
                         <div className="a-TextControl-input">
                             <input
-                                placeholder="账号"
+                                placeholder="请输入账号"
                                 className=""
                                 onChange={e => {
                                     user.username = e.currentTarget.value;
@@ -52,7 +52,7 @@ export default inject('store')(
                         <div className="a-TextControl-input">
                             <input
                                 type="password"
-                                placeholder="密码"
+                                placeholder="请输入密码"
                                 onChange={e => {
                                     user.password = e.currentTarget.value;
                                 }}
