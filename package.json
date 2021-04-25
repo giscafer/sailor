@@ -11,7 +11,7 @@
         "fis3:server": "fis3 server start --www ./public --port 8082 --no-daemon",
         "server:start": "./server/node_modules/.bin/nodemon ./server/index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "gh-pages": "rm -rf gh-pages && fis3 release gh-pages -c && cp CNAME ./gh-pages",
+        "build": "rm -rf ./dist && fis3 release dist -c",
         "deploy-gh-pages": "git subtree push --prefix gh-pages origin gh-pages"
     },
     "repository": {
