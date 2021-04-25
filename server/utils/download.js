@@ -72,9 +72,9 @@ function ensureFileDir(userPath = '', projectPath = '') {
         fs.unlinkSync(tempTemplatePath);
     } catch (error) {}
     fs.copySync(directoryPath, tempTemplatePath);
-    console.log(tempTemplatePath);
-    console.log(path.resolve('.sailor'));
-    const reactivePath = `.sailor${tempTemplatePath.replace(path.resolve('.sailor'), '')}`;
+    const idx = tempTemplatePath.indexOf('/.sailor/');
+    const reactivePath = tempTemplatePath.substr(idx + 1);
+    console.log(tempTemplatePath, reactivePath);
     return {projectPath: tempProjectPath, templatePath: tempTemplatePath, reactivePath};
 }
 /**
