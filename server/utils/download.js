@@ -91,7 +91,7 @@ function genPageSchemaJson(username, project, pages = []) {
             fs.outputJsonSync(`${jsonFilePath}/${page.path}.json`, page);
         }
         archiverFile(projectPath, templatePath, file => {
-            resolve({file: `${reactivePath}.zip`, fileName: `sailor-admin-${project}.zip`});
+            resolve({file: `${templatePath}.zip`, fileName: `sailor-admin-${project}.zip`});
             console.log('项目生成成功！');
         });
     });
