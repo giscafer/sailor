@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const archiver = require('archiver');
 
-const directoryPath = path.join(__dirname, '../../', '_templates/sailor-admin');
+const directoryPath = path.join(__dirname, '../', '_templates/sailor-admin');
 /**
  * 打包下载
  * @param {String} projectPath 项目路径

@@ -253,7 +253,7 @@ ghPages.match('{*.jsx,*.tsx,*.ts,*.js}', {
     }
 });
 ghPages.match('*', {
-    domain: '//sailor.bighome360.com',
+    domain: '//sailor.giscafer.com',
     deploy: [
         fis.plugin('skip-packed'),
         fis.plugin('local-deliver', {
