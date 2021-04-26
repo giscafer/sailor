@@ -142,7 +142,7 @@ export default inject('store')(
                         schema: {
                             type: 'page',
                             title: '测试页面',
-                            body: '这是你刚刚新增的页面。'
+                            body: [{type: 'tpl', tpl: '这是你刚刚新增的页面。', inline: false}]
                         }
                     }
                 ])

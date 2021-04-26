@@ -10,7 +10,7 @@
 
 # 安装依赖
 npm i
-# 打开服务
+# 打开服务 localhost:3200
 npm start
 ```
 
@@ -22,64 +22,64 @@ npm start
 
 ```json
 {
-    "status": 0,
-    "msg": "",
-    "data": {
-        "pages": [
-            {
-                "label": "Home",
-                "url": "/",
-                "redirect": "/index/1"
-            },
-            {
-                "label": "列表示例",
-                "url": "/crud",
-                "rewrite": "/crud/list",
-                "icon": "fa fa-cube",
-                "children": [
-                    {
-                        "label": "列表",
-                        "url": "/crud/list",
-                        "icon": "fa fa-list",
-                        "schemaApi": "get:/pages/crud-list.json"
-                    },
-                    {
-                        "label": "新增",
-                        "url": "/crud/new",
-                        "icon": "fa fa-plus",
-                        "schemaApi": "get:/pages/crud-new.json"
-                    },
-                    {
-                        "label": "查看",
-                        "url": "/crud/:id",
-                        "schemaApi": "get:/pages/crud-view.json"
-                    },
-                    {
-                        "label": "修改",
-                        "url": "/crud/:id/edit",
-                        "schemaApi": "get:/pages/crud-edit.json"
-                    }
-                ]
-            },
-            {
-                "label": "分组2",
-                "children": [
-                    {
-                        "label": "用户管理",
-                        "schema": {
-                            "type": "page",
-                            "title": "用户管理",
-                            "body": "页面C"
-                        }
-                    },
-                    {
-                        "label": "外部链接",
-                        "link": "http://github.com/giscafer/sailor"
-                    }
-                ]
-            }
+  "status": 0,
+  "msg": "",
+  "data": {
+    "pages": [
+      {
+        "label": "Home",
+        "url": "/",
+        "redirect": "/index/1"
+      },
+      {
+        "label": "列表示例",
+        "url": "/crud",
+        "rewrite": "/crud/list",
+        "icon": "fa fa-cube",
+        "children": [
+          {
+            "label": "列表",
+            "url": "/crud/list",
+            "icon": "fa fa-list",
+            "schemaApi": "get:/pages/crud-list.json"
+          },
+          {
+            "label": "新增",
+            "url": "/crud/new",
+            "icon": "fa fa-plus",
+            "schemaApi": "get:/pages/crud-new.json"
+          },
+          {
+            "label": "查看",
+            "url": "/crud/:id",
+            "schemaApi": "get:/pages/crud-view.json"
+          },
+          {
+            "label": "修改",
+            "url": "/crud/:id/edit",
+            "schemaApi": "get:/pages/crud-edit.json"
+          }
         ]
-    }
+      },
+      {
+        "label": "分组2",
+        "children": [
+          {
+            "label": "用户管理",
+            "schema": {
+              "type": "page",
+              "title": "用户管理",
+              "body": "页面C"
+            }
+          },
+          {
+            "label": "外部链接",
+            "link": "http://github.com/giscafer/sailor"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -89,6 +89,6 @@ npm start
 
 ```json
 {
-    "schemaApi": "get:/pages/crud-list.json"
+  "schemaApi": "get:/pages/crud-list.json"
 }
 ```

@@ -6,7 +6,7 @@
     "scripts": {
         "test": "test",
         "start": "NODE_ENV=production node ./index.js",
-        "dev": "NODE_ENV=production MONGODB_USER=webgis MONGODB_PASSWORD=giscafer MONGODB_HOST=localhost MONGODB_PORT=27017 ./node_modules/.bin/nodemon ./index.js",
+        "dev": "NODE_ENV=production MONGODB_USER=webgis MONGODB_PASSWORD=giscafer MONGODB_HOST=localhost MONGODB_PORT=27017 node ./index.js",
         "watch": "./node_modules/.bin/nodemon ./index.js"
     },
     "keywords": [

@@ -215,7 +215,7 @@ export default inject('store')(
                 schema: {
                     type: 'page',
                     title: value.label,
-                    body: '这是你刚刚新增的页面。'
+                    body: [{type: 'tpl', tpl: '这是你刚刚新增的页面。', inline: false}]
                 }
             };
 

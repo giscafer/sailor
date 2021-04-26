@@ -38,13 +38,13 @@ export default schema2component(
                     validations: {
                         maxLength: 200
                     }
-                },
+                }
 
-                {
+                /*  {
                     type: 'icon-picker',
                     label: '图标',
                     name: 'icon'
-                }
+                } */
             ]
         }
     },
