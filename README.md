@@ -13,11 +13,14 @@
 
 ## 本地运行
 
-1. `npm i` 安装依赖
-2. `cd server` 进入服务端目录，再 `npm i` 安装服务端依赖
-3. `npm server:start` 跑后端服务
-4. `npm run dev` 编译前端
-5. `npm run client:start` 启动前端，http://localhost:8082/
+1. 根目录 `npm i` 安装依赖
+2. `cd sailor-server` 进入服务端目录
+
+-   `npm i` 安装服务端依赖
+-   `npm run dev` 开发启动
+
+4. 根目录 `npm run dev` 编译前端
+5. 根目录 `npm run client:start` 启动前端，http://localhost:8082/
 
 ## TODO List
 
