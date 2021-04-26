@@ -10,6 +10,13 @@ export const MENUS = [
         icon: 'fa fa-folder'
     },
     {
+        label: '模板示例',
+        icon: 'fa fa-file-code-o',
+        onClick: () => {
+            window.open('https://baidu.gitee.io/amis/examples/index');
+        }
+    },
+    {
         label: 'Github',
         icon: 'fa fa-github',
         onClick: () => {
