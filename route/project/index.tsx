@@ -1,4 +1,4 @@
-import {AsideNav, Button, Layout} from 'amis';
+import {AsideNav, Button, Layout, confirm} from 'amis';
 import {inject, observer} from 'mobx-react';
 import React from 'react';
 import {matchPath, RouteComponentProps} from 'react-router';
@@ -179,8 +179,9 @@ export default inject('store')(
                         <div className="w-1/4 mt-10 mx-5 -mb-5" key={item.path}>
                             <Card
                                 onDelete={() => {
-                                    console.log('onDelete', item);
-                                    store.project.deleteProject(item);
+                                    confirm('确认要删除?').then(confirmed => {
+                                        confirmed && store.project.deleteProject(item);
+                                    });
                                 }}
                                 onEdit={() => {
                                     // toast.info('edit');
