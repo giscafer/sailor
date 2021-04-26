@@ -47,28 +47,7 @@ export const doPost = (endpoint: string, data: any, config = {}) => {
             }
         })
             .then((resp: AxiosResponse) => {
-                console.log(resp);
-                if (resp.status !== 200) {
-                    reject(resp);
-                } else {
-                    if (resp.config.responseType === 'blob') {
-                        // 附件下载
-                        const disposition = resp.headers['content-disposition'] || '';
-                        resolve({
-                            content: resp.data,
-                            filename: disposition.replace('attachment; filename=', '')
-                        });
-                        return;
-                    }
-                    const data = resp.data || {};
-                    if (data.status === 401) {
-                        location.replace('/#/login');
-                    }
-                    if (resp.data?.status !== 0) {
-                        toast.error(resp.data?.msg || '操作失败', '提示');
-                    }
-                    resolve(resp.data?.data || {});
-                }
+                responseHandle(resp, resolve, reject);
             })
             .catch((err: AxiosError) => {
                 toast.error('服务异常');
@@ -90,23 +69,7 @@ export const doGet = (endpoint: string, data: any | null = {}) => {
             }
         })
             .then((resp: AxiosResponse) => {
-                if (resp.status !== 200) {
-                    reject(resp);
-                } else {
-                    if (resp.config.responseType === 'blob') {
-                        // 附件下载
-                        resolve(resp.data);
-                        return;
-                    }
-                    const data = resp.data || {};
-                    if (data.status === 401) {
-                        location.replace('/#/login');
-                    }
-                    if (resp.data?.status !== 0) {
-                        toast.error(resp.data?.msg || '操作失败', '提示');
-                    }
-                    resolve(resp.data?.data || {});
-                }
+                responseHandle(resp, resolve, reject);
             })
             .catch((err: AxiosError) => {
                 toast.error('服务异常');
@@ -114,3 +77,29 @@ export const doGet = (endpoint: string, data: any | null = {}) => {
             });
     });
 };
+
+function responseHandle(resp: AxiosResponse, resolve: Function, reject: Function) {
+    if (resp.status !== 200) {
+        reject(resp);
+    } else {
+        if (resp.config.responseType === 'blob') {
+            // 附件下载
+            const disposition = resp.headers['content-disposition'] || '';
+            resolve({
+                content: resp.data,
+                filename: disposition.replace('attachment; filename=', '')
+            });
+            return;
+        }
+        const data = resp.data || {};
+        if (data.status === 401) {
+            if (!location.hash.startsWith('#/login')) {
+                location.replace('/#/login');
+                toast.error(resp.data?.msg || '操作失败', '提示');
+            }
+        } else if (resp.data?.status !== 0) {
+            toast.error(resp.data?.msg || '操作失败', '提示');
+        }
+        resolve(resp.data?.data || {});
+    }
+}

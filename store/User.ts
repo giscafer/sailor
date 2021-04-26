@@ -22,9 +22,12 @@ export const UserStore = types
                 // ... yield can be used in async/await style
                 const res: any = yield doPost('/api/auth/login', user);
                 updateToken(res.token);
-                getUserInfo();
+                if (res.token) {
+                    getUserInfo();
+                } else {
+                    success = false;
+                }
                 self.state = 'done';
-                console.log('login');
             } catch (error) {
                 // ... including try/catch error handling
                 console.error('Failed to fetch user', error);

@@ -17,10 +17,12 @@ export default inject('store')(
             password: ''
         };
         function loginHandle() {
+            if (!user.username || !user.password) {
+                return toast.warning('请输入账号或密码！');
+            }
             store.user.login(user).then(isLogin => {
                 if (isLogin) {
                     (history as any).replace('/project');
-                    toast.success('欢迎使用 Sailor');
                 }
             });
         }
