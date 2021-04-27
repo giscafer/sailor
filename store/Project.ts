@@ -41,11 +41,14 @@ export const ProjectStore = types
             let list: any[] = [];
             self.state = 'pending';
             try {
-                list = yield doGet('/api/project/list') || [];
+                list = yield doGet('/api/project/list');
+                if (!Array.isArray(list)) {
+                    list = [];
+                }
                 self.state = 'success';
                 self.projectList.clear();
                 self.projectList.replace(
-                    list.map(p => {
+                    list?.map(p => {
                         return createProject(p);
                     })
                 );

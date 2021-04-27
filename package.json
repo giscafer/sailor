@@ -29,7 +29,7 @@
     },
     "homepage": "https://github.com/giscafer/amis-editor-demo#readme",
     "dependencies": {
-        "amis": "^1.1.5",
+        "amis": "1.1.5",
         "amis-editor": "^2.0.13",
         "axios": "^0.19.0",
         "bootstrap": "3.4.1",
@@ -37,12 +37,13 @@
         "file-saver": "^2.0.5",
         "mobx": "4.5.0",
         "mobx-react": "5.2.8",
+        "mobx-react-lite": "2.2.2",
         "mobx-state-tree": "^3.7.0",
         "qs": "6.5.1",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
-        "react-router": "5.0.1",
-        "react-router-dom": "5.0.1"
+        "react-router": "5.2.0",
+        "react-router-dom": "5.2.0"
     },
     "devDependencies": {
         "@types/file-saver": "^2.0.2",
@@ -51,7 +52,7 @@
         "@types/qs": "^6.5.3",
         "@types/react": "^16.8.4",
         "@types/react-dom": "^16.8.4",
-        "@types/react-router-dom": "^4.3.2",
+        "@types/react-router-dom": "^5.1.7",
         "axios-mock-adapter": "^1.16.0",
         "bce-sdk-js": "^0.2.9",
         "fis-parser-sass": "^1.0.1",

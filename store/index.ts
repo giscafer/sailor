@@ -1,5 +1,6 @@
 import {reaction} from 'mobx';
-import {applySnapshot, flow, getEnv, getSnapshot, types} from 'mobx-state-tree';
+import {applySnapshot, flow, getEnv, getSnapshot, Instance, types} from 'mobx-state-tree';
+import {createContext, useContext} from 'react';
 import {PageStore} from './Page';
 import {Project, IProjectStore, ProjectStore} from './Project';
 import {UserStore} from './User';
@@ -167,3 +168,15 @@ export const MainStore = types
     });
 
 export type IMainStore = typeof MainStore.Type;
+
+export type RootInstance = Instance<typeof MainStore>;
+const RootStoreContext = createContext<null | RootInstance>(null);
+export const Provider = RootStoreContext.Provider;
+
+export function useStore(): Instance<typeof MainStore> {
+    const store = useContext(RootStoreContext);
+    if (store === null) {
+        throw new Error('Store cannot be null, please add a context provider');
+    }
+    return store;
+}

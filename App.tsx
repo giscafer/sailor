@@ -1,13 +1,13 @@
 import {alert, confirm, toast} from 'amis';
 import copy from 'copy-to-clipboard';
-import {Provider} from 'mobx-react';
+// import {Provider} from 'mobx-react';
 import React from 'react';
 import RootRoute from './route/index';
-import {MainStore} from './store/index';
+import {Provider, MainStore} from './store/index';
 import {fetcher, isCancel} from './utils/fetcher';
 import 'amis/scss/helper.scss';
 
-export default function (): JSX.Element {
+function initializeStore() {
     const store = ((window as any).store = MainStore.create(
         {},
         {
@@ -28,9 +28,13 @@ export default function (): JSX.Element {
             }
         }
     ));
+    return store;
+}
 
+export default function (): JSX.Element {
+    const store = initializeStore();
     return (
-        <Provider store={store}>
+        <Provider value={store}>
             <RootRoute store={store} />
         </Provider>
     );

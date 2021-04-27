@@ -1,30 +1,25 @@
+import {filter, render, utils} from 'amis';
+import {getEnv} from 'mobx-state-tree';
+import qs from 'qs';
 import React from 'react';
 import {RouteComponentProps, withRouter} from 'react-router';
-import {inject, observer} from 'mobx-react';
-import {getEnv} from 'mobx-state-tree';
-import {IMainStore} from '../store';
-import qs from 'qs';
-import {render, utils, filter} from 'amis';
+import {IMainStore, useStore} from '../store';
 
 export function schema2component(schema: any, transform?: Function, session: string = 'page') {
     interface SchemaRendererProps extends RouteComponentProps<{}> {
         store: IMainStore;
         [propName: string]: any;
     }
+    function SchemaRenderer(props: any) {
+        let displayName = 'SchemaRenderer';
+        let env: any;
 
-    @inject('store')
-    @observer
-    class SchemaRenderer extends React.Component<SchemaRendererProps> {
-        static displayName = 'SchemaRenderer';
-        env: any;
-
-        getEnv() {
-            if (this.env) {
-                return this.env;
+        function getEnv1() {
+            if (env) {
+                return env;
             }
 
-            const props = this.props;
-            const store = props.store;
+            const store = useStore();
             const rootEnv = getEnv(store);
 
             const normalizeLink = (to: string, preserveHash?: boolean) => {
@@ -33,7 +28,7 @@ export function schema2component(schema: any, transform?: Function, session: str
                 }
 
                 to = to || '';
-                const history = this.props.history;
+                const history = props.history;
                 const location = history.location;
                 const currentQuery = qs.parse(location.search.substring(1));
                 to = filter(to.replace(/\$\$/g, qs.stringify(currentQuery)), currentQuery);
@@ -70,7 +65,7 @@ export function schema2component(schema: any, transform?: Function, session: str
             };
 
             const isCurrentUrl = (to: string) => {
-                const history = this.props.history;
+                const history = props.history;
                 const link = normalizeLink(to);
                 const location = history.location;
                 let pathname = link;
@@ -96,14 +91,14 @@ export function schema2component(schema: any, transform?: Function, session: str
                 return false;
             };
 
-            return (this.env = {
+            return (env = {
                 ...rootEnv,
                 session,
                 isCurrentUrl,
                 updateLocation:
                     props.updateLocation ||
                     ((location: string, replace: boolean) => {
-                        const history = this.props.history;
+                        const history = props.history;
                         if (location === 'goBack') {
                             return history.goBack();
                         } else if (/^https?\:\/\//.test(location)) {
@@ -115,7 +110,7 @@ export function schema2component(schema: any, transform?: Function, session: str
                 jumpTo:
                     props.jumpTo ||
                     ((to: string, action?: any) => {
-                        const history = this.props.history;
+                        const history = props.history;
                         if (to === 'goBack') {
                             return history.goBack();
                         }
@@ -145,42 +140,40 @@ export function schema2component(schema: any, transform?: Function, session: str
             });
         }
 
-        render() {
-            const {
-                router,
-                match,
+        const {
+            router,
+            match,
+            location,
+            history,
+            store,
+            schema: schemaProp,
+            jumpTo,
+            updateLocation,
+            embedMode,
+            ...rest
+        } = props;
+        const finalSchema = schemaProp || schema;
+        let body: React.ReactNode;
+
+        finalSchema.type || (finalSchema.type = 'page');
+
+        body = render(
+            finalSchema,
+            {
                 location,
-                history,
-                store,
-                schema: schemaProp,
-                jumpTo,
-                updateLocation,
-                embedMode,
-                ...rest
-            } = this.props;
-            const finalSchema = schemaProp || schema;
-            let body: React.ReactNode;
+                data: utils.createObject({
+                    ...match.params,
+                    amisStore: store,
+                    pathname: location.pathname,
+                    params: match.params
+                }),
+                ...rest,
+                propsTransform: transform
+            },
+            getEnv1()
+        );
 
-            finalSchema.type || (finalSchema.type = 'page');
-
-            body = render(
-                finalSchema,
-                {
-                    location,
-                    data: utils.createObject({
-                        ...match.params,
-                        amisStore: store,
-                        pathname: location.pathname,
-                        params: match.params
-                    }),
-                    ...rest,
-                    propsTransform: transform
-                },
-                this.getEnv()
-            );
-
-            return <>{body}</>;
-        }
+        return <>{body}</>;
     }
 
     return withRouter(SchemaRenderer);
