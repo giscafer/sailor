@@ -19,8 +19,8 @@
 -   `npm i` 安装服务端依赖
 -   `npm run dev` 开发启动
 
-4. 根目录 `npm run dev` 编译前端
-5. 根目录 `npm run client:start` 启动前端，http://localhost:8082/
+3. 根目录 `npm run dev` 编译前端
+4. 根目录 `npm run client:start` 启动前端，http://localhost:8082/
 
 ## TODO List
 
@@ -36,11 +36,12 @@
 -   [x] 项目下载
 -   [x] 下载的项目本地运行正常
 
-issues：
+TODO List:
 
 -   [ ] 页面重命名
 -   [ ] 项目重命名
 -   [ ] 页面缓存清除（保存退出、删除之后）
+-   [ ] 统计图渲染问题
 
 ## 使用协议
 
