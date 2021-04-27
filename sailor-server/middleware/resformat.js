@@ -9,7 +9,7 @@ const resFormat = function (pattern) {
     } catch (error) {
       ctx.status = 200;
       ctx.body = {
-        status: error.code ? error.code : 1,
+        status: error.code ? error.code : error.status || 1,
         msg: error.message || '操作失败',
       };
       throw error;

@@ -4,6 +4,12 @@ const model = require('../models/project');
 const authModel = require('../models/auth');
 module.exports = {
   getList: async (ctx) => {
+    if (!ctx.query.user) {
+      throw new Error({
+        code: 401,
+        message: '请登录',
+      });
+    }
     try {
       const result = await model.Dao.list(ctx.query.user);
       ctx.body = result;
@@ -50,9 +56,8 @@ module.exports = {
     if (!id) {
       throw new Error('项目id为空');
     }
-    const ids = Array.isArray(id) ? id : [id];
     try {
-      const result = await model.Dao.delete(ids);
+      const result = await model.Dao.delete(id);
       ctx.body = result;
     } catch (err) {
       throw err;

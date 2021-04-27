@@ -3,7 +3,6 @@ module.exports = {
   login: async (ctx) => {
     try {
       const { username, password } = ctx.request.body;
-      console.log('username=', username);
       if (!username) {
         throw new Error('账号不能为空');
       }
@@ -17,6 +16,12 @@ module.exports = {
     }
   },
   getUser: async (ctx) => {
+    if (!ctx.query.user) {
+      throw new Error({
+        code: 401,
+        message: '请登录',
+      });
+    }
     try {
       const result = await authDB.Dao.getUser(ctx.query.user);
       ctx.body = result;
