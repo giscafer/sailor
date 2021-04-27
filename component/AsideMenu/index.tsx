@@ -1,6 +1,6 @@
 import {AsideNav, confirm} from 'amis';
 import React from 'react';
-import {matchPath} from 'react-router';
+import {matchPath, withRouter} from 'react-router';
 import {Link} from 'react-router-dom';
 
 export function isActive(link: any, location: any) {
@@ -22,8 +22,10 @@ function AsideMenu(props: any) {
             }
         ],
         asideFolded,
+        editable = true,
         onDelete,
-        onEdit
+        onEdit,
+        location
     } = props;
 
     return (
@@ -65,7 +67,7 @@ function AsideMenu(props: any) {
                     );
                 }
 
-                if (!link.isMenu && !link.active) {
+                if (!link.isMenu && !link.active && editable) {
                     children.push(
                         <i
                             key="delete"
@@ -81,7 +83,7 @@ function AsideMenu(props: any) {
                         />
                     );
                 }
-                if (!link.isMenu) {
+                if (!link.isMenu && editable) {
                     children.push(
                         <i
                             key="edit"
@@ -119,4 +121,4 @@ function AsideMenu(props: any) {
     );
 }
 
-export default AsideMenu;
+export default withRouter(AsideMenu);

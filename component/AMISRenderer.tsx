@@ -155,7 +155,11 @@ export function schema2component(schema: any, transform?: Function, session: str
         const finalSchema = schemaProp || schema;
         let body: React.ReactNode;
 
-        finalSchema.type || (finalSchema.type = 'page');
+        try {
+            finalSchema.type || (finalSchema.type = 'page');
+        } catch (e) {
+            console.log(e);
+        }
 
         body = render(
             finalSchema,

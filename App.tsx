@@ -35,7 +35,7 @@ export default function (): JSX.Element {
     const store = initializeStore();
     return (
         <Provider value={store}>
-            <RootRoute store={store} />
+            <RootRoute />
         </Provider>
     );
 }

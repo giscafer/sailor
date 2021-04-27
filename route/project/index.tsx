@@ -1,17 +1,16 @@
-import {AsideNav, Button, confirm, Layout} from 'amis';
+import {Button, confirm, Layout} from 'amis';
 import {observer} from 'mobx-react-lite';
 import React, {useEffect} from 'react';
-import {matchPath} from 'react-router';
-import {Link, RouteComponentProps, withRouter} from 'react-router-dom';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import AddProjectModal from '../../component/AddProjectModal';
+import AsideMenu from '../../component/AsideMenu';
 import Card from '../../component/common/Card';
 import Empty from '../../component/common/Empty';
 import SiteHeader from '../../component/SiteHeader';
-import {isActive} from '../../component/AsideMenu';
 import {MENUS} from '../../config';
 import {useStore} from '../../store';
 
-function ProjectComponent({location, history, staticContext}: RouteComponentProps) {
+function ProjectComponent({history}: RouteComponentProps) {
     const store = useStore();
 
     useEffect(() => {
@@ -21,75 +20,14 @@ function ProjectComponent({location, history, staticContext}: RouteComponentProp
     }, []);
 
     function renderAside() {
-        const navigations = MENUS;
+        const navigations = [
+            {
+                label: '菜单',
+                children: MENUS
+            }
+        ];
 
-        return (
-            <AsideNav
-                key={store.asideFolded ? 'folded-aside' : 'aside'}
-                navigations={[
-                    {
-                        label: '菜单',
-                        children: navigations
-                    }
-                ]}
-                renderLink={({link, toggleExpand, classnames: cx, depth}: any) => {
-                    if (link.hidden) {
-                        return null;
-                    }
-
-                    let children = [];
-
-                    if (link.children) {
-                        children.push(
-                            <span
-                                key="expand-toggle"
-                                className={cx('AsideNav-itemArrow')}
-                                onClick={e => toggleExpand(link, e)}
-                            ></span>
-                        );
-                    }
-
-                    link.badge &&
-                        children.push(
-                            <b key="badge" className={cx(`AsideNav-itemBadge`, link.badgeClassName || 'bg-info')}>
-                                {link.badge}
-                            </b>
-                        );
-
-                    if (link.icon) {
-                        children.push(<i key="icon" className={cx(`AsideNav-itemIcon`, link.icon)} />);
-                    } else if (store.asideFolded && depth === 1) {
-                        children.push(
-                            <i
-                                key="icon"
-                                className={cx(`AsideNav-itemIcon`, link.children ? 'fa fa-folder' : 'fa fa-info')}
-                            />
-                        );
-                    }
-
-                    children.push(
-                        <span key="label" className={cx('AsideNav-itemLabel')}>
-                            {link.label}
-                        </span>
-                    );
-
-                    return link.path ? (
-                        link.active ? (
-                            <a>{children}</a>
-                        ) : (
-                            <Link to={link.path[0] === '/' ? link.path : `${link.path}`}>{children}</Link>
-                        )
-                    ) : (
-                        <a onClick={link.onClick ? link.onClick : link.children ? () => toggleExpand(link) : undefined}>
-                            {children}
-                        </a>
-                    );
-                }}
-                isActive={(link: any) =>
-                    isActive(link.path && link.path[0] === '/' ? link.path : `${link.path}`, location)
-                }
-            />
-        );
+        return <AsideMenu asideFolded editable={false} navigations={navigations}></AsideMenu>;
     }
 
     function handleConfirm(value: {name: string; path: string; icon: string}) {

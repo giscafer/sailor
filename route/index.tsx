@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
-import {ToastComponent, AlertComponent, Spinner} from 'amis';
-import {Route, Switch, Redirect, HashRouter as Router, RouteComponentProps, withRouter} from 'react-router-dom';
+import {AlertComponent, Spinner, ToastComponent} from 'amis';
 import {observer} from 'mobx-react-lite';
+import React, {useEffect} from 'react';
+import {HashRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
 import {useStore} from '../store';
 import LoginComponent from './login';
 import ProjectComponent from './project';
@@ -13,7 +13,7 @@ function MainRouter() {
     useEffect(() => {
         user.getUserInfo().then(userInfo => {
             if (!userInfo) {
-                // history.replace('/login');
+                location.replace('/login');
             }
         });
     });
