@@ -6,12 +6,13 @@
     "scripts": {
         "start": "npm run server && npm run client:start",
         "dev": "npm run fis3:dev",
+        "local": "node ./prerun.js && npm run dev",
         "fis3:dev": "fis3 release -cwd ./public",
         "client:start": "fis3 server start --www ./public --port 8082 --no-daemon",
         "fis3:server": "fis3 server start --www ./public --port 8082 --no-daemon",
         "server:start": "./server/node_modules/.bin/nodemon ./server/index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "rm -rf ./dist && fis3 release dist -c",
+        "build": "node ./prerun.js prod && rm -rf ./dist && fis3 release dist -c",
         "deploy-gh-pages": "git subtree push --prefix gh-pages origin gh-pages"
     },
     "repository": {
