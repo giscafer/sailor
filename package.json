@@ -1,7 +1,7 @@
 {
-    "name": "amis-editor-demo",
+    "name": "sailor",
     "version": "1.0.0",
-    "description": "amis 可视化编辑器",
+    "description": "基于amis低码开发平台",
     "main": "index.js",
     "scripts": {
         "start": "npm run server && npm run client:start",
@@ -19,6 +19,7 @@
         "url": "git+https://github.com/giscafer/amis-editor-demo.git"
     },
     "keywords": [
+        "sailor",
         "amis",
         "editor"
     ],

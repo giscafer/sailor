@@ -1,8 +1,8 @@
 # Sailor
 
-水手低码平台（Sailor Low-Code Platform）
+水手低码平台（Sailor Low-Code Platform），在线体验：http://sailor.bighome360.com/ ，账号密码：guest/123456
 
-基于[amis-editor-demo](http://aisuda.github.io/amis-editor-demo)改造
+基于 [amis-editor-demo](http://aisuda.github.io/amis-editor-demo) 改造
 
 技术栈：
 
@@ -34,7 +34,7 @@
 -   [x] 页面预览
 -   [x] amis-editor 编辑后保存页面
 -   [x] 项目下载
--   [ ] 下载的项目本地运行正常
+-   [x] 下载的项目本地运行正常
 
 issues：
 
