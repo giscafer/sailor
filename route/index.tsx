@@ -18,11 +18,6 @@ function MainRouter() {
         });
     });
 
-    /*   if (location.hash?.startsWith('#/project')) {
-        project.getList().then(() => {
-            console.log('getList');
-        });
-    } */
     return (
         <Router>
             <div className="routes-wrapper">

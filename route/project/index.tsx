@@ -1,65 +1,27 @@
 import {AsideNav, Button, confirm, Layout} from 'amis';
 import {observer} from 'mobx-react-lite';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {matchPath} from 'react-router';
-import {withRouter, RouteComponentProps, Link, Switch, Route} from 'react-router-dom';
+import {Link, RouteComponentProps, withRouter} from 'react-router-dom';
 import AddProjectModal from '../../component/AddProjectModal';
-import AMISRenderer from '../../component/AMISRenderer';
 import Card from '../../component/common/Card';
 import Empty from '../../component/common/Empty';
-import UserInfo from '../../component/common/UserInfo';
+import SiteHeader from '../../component/SiteHeader';
+import {isActive} from '../../component/AsideMenu';
 import {MENUS} from '../../config';
 import {useStore} from '../../store';
 
-function isActive(link: any, location: any) {
-    const ret = matchPath(location.pathname, {
-        path: link ? link.replace(/\?.*$/, '') : '',
-        exact: true,
-        strict: true
-    });
-
-    return !!ret;
-}
-
 function ProjectComponent({location, history, staticContext}: RouteComponentProps) {
     const store = useStore();
-    console.log('store=', store);
-    function renderHeader() {
-        return (
-            <div>
-                <div className={`a-Layout-brandBar`}>
-                    <button onClick={store.toggleOffScreen} className="pull-right visible-xs">
-                        <i className="glyphicon glyphicon-align-justify"></i>
-                    </button>
-                    <div className={`a-Layout-brand`}>
-                        <i className="fa fa-code"></i>
-                        <span className="hidden-folded m-l-sm">Sailor 低码平台</span>
-                    </div>
-                </div>
-                <div className={`a-Layout-headerBar`}>
-                    <div className="hidden-xs p-t-sm pull-left">
-                        <Button size="sm" level="info" onClick={() => store.project.setAddModelOpen(true)}>
-                            新增项目
-                        </Button>
-                        <Button size="sm mx-10" level="default" onClick={() => store.project.getList()}>
-                            刷新列表
-                        </Button>
-                    </div>
-                    <UserInfo
-                        user={store.user}
-                        onLogout={() => {
-                            store.user.logout();
-                            history.replace('/login');
-                        }}
-                    />
-                </div>
-            </div>
-        );
-    }
+
+    useEffect(() => {
+        store.project.getList().then(() => {
+            console.log('getList');
+        });
+    }, []);
 
     function renderAside() {
         const navigations = MENUS;
-        const paths = navigations.map(item => item.path);
 
         return (
             <AsideNav
@@ -147,7 +109,20 @@ function ProjectComponent({location, history, staticContext}: RouteComponentProp
         });
         store.project.setAddModelOpen(false);
     }
-    console.log(store.project.projectList.length);
+
+    const renderHeader = () => {
+        return (
+            <SiteHeader>
+                <Button size="sm" level="info" onClick={() => store.project.setAddModelOpen(true)}>
+                    新增项目
+                </Button>
+                <Button size="sm mx-10" level="default" onClick={() => store.project.getList()}>
+                    刷新列表
+                </Button>
+            </SiteHeader>
+        );
+    };
+
     return (
         <Layout aside={renderAside()} header={renderHeader()} folded={store.asideFolded} offScreen={store.offScreen}>
             <h4 className="text-green-700 text-center h-2">
