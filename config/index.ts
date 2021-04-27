@@ -1,6 +1,7 @@
 export const appName = 'Sailor';
 
-export const BASE_URL = '//localhost:3000/sailor';
+// export const BASE_URL = '//localhost:3000/sailor';
+export const BASE_URL = '//api.bighome360.com/sailor';
 
 export const MENUS = [
     {
