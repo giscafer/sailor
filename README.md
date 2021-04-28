@@ -12,11 +12,13 @@
 ![](./architecture.png)
 
 ## 本地运行
+> 注意：需要使用 `Node14` 版本，`Node13` 及以下版本不支持；
 
 1. 根目录 `npm i` 安装依赖
 2. `cd sailor-server` 进入服务端目录
 
 -   `npm i` 安装服务端依赖
+-   将`sailor-server`文件夹中的`config.js`的`localConfig.secret`修改改为为本地mongodb的密码
 -   `npm run dev` 开发启动
 
 4. 根目录 `npm run dev` 编译前端
