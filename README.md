@@ -1,8 +1,10 @@
 # Sailor
 
-水手低码平台（Sailor Low-Code Platform），在线体验：http://sailor.bighome360.com/ ，账号密码：guest/123456
+水手低码平台（Sailor Low-Code Platform）。
 
-基于 [amis-editor-demo](http://aisuda.github.io/amis-editor-demo) 改造
+在线体验：http://sailor.bighome360.com/ ，账号密码：guest/123456
+
+使用文档说明：[document.md](./document.md)
 
 技术栈：
 
