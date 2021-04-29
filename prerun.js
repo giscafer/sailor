@@ -4,8 +4,8 @@
 
 const {readFileSync, writeFileSync} = require('fs');
 
-function prebuild(envType) {
-    const env = envType ?? (process.env.NODE_ENV || process.argv[2]);
+function prebuild() {
+    const env = process.env.NODE_ENV || process.argv[2];
     console.log(env);
     let envStr = "export const BASE_URL = '//localhost:3000/sailor';";
     if (env === 'prod' || env === 'production') {
