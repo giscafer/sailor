@@ -65,3 +65,4 @@ yarn.lock
 /public
 mongod.sh
 # prerun.js
+package-lock.json
