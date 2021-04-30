@@ -11,8 +11,7 @@ import {useStore} from '../../store';
 import './style.scss';
 
 function Login(props: RouteComponentProps) {
-    const store = useStore();
-    const {user} = store;
+    const {user} = useStore();
     const {history} = props;
     const userInfo = {
         username: '',

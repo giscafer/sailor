@@ -1,4 +1,3 @@
-import {toast} from 'amis';
 import {types, flow} from 'mobx-state-tree';
 import {doGet, doPost} from '../utils/fetcher';
 export const UserStore = types
