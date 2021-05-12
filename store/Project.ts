@@ -158,7 +158,6 @@ export const ProjectStore = types
                 console.log('onAttach-project');
             },
             afterCreate() {
-                getList();
                 console.log('afterCreate-project');
             }
         };
