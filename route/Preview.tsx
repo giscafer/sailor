@@ -109,7 +109,7 @@ function Preview({history, match}: RouteComponentProps<{id: string}>) {
         <Layout aside={renderAside()} header={renderHeader()} folded={store.asideFolded} offScreen={store.offScreen}>
             <Provider value={store}>
                 <Switch>
-                    <Redirect to={genRoutePath(store.pages[0].path)} from={genRoutePath('')} exact />
+                    <Redirect to={genRoutePath(store.pages[0]?.path)} from={genRoutePath('')} exact />
                     {store.pages.map(item => {
                         return (
                             <Route

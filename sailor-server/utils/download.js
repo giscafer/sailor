@@ -65,7 +65,13 @@ function genSiteSchemaJson(pages = [], jsonFilePath) {
       schemaApi: `get:/pages/${page.path}.json`,
     };
     if (index === 0) {
-      siteObj.data.pages[0]['redirect'] = `/${page.path}`;
+      if(!siteObj.data?.pages){
+        siteObj.data?.pages=[]
+      }
+      if(!siteObj.data?.pages[0]){
+        siteObj.data?.pages.push({})
+      }
+      siteObj.data?.pages[0]['redirect'] = `/${page.path}`;
     }
     siteObj.data.pages[1]['children'].push(route);
     index++;
