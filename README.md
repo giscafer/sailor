@@ -2,8 +2,6 @@
 
 水手低码平台（Sailor Low-Code Platform）。
 
-在线体验：http://sailor.bighome360.com/ ，账号密码：guest/123456
-
 使用文档说明：[document.md](./document.md)
 
 技术栈：
@@ -47,6 +45,14 @@ TODO List:
 -   [ ] 项目重命名
 -   [ ] 页面缓存清除（保存退出、删除之后）
 -   [ ] 统计图渲染问题
+
+## 简要截图
+
+![](./screenshots/project.png)
+
+![](./screenshots/edit0.png)
+
+![](./screenshots/edit.png)
 
 ## 使用协议
 
