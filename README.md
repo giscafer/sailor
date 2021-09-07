@@ -15,15 +15,15 @@
 
 > 注意：需要使用 `Node14+` 版本；
 
-1. 根目录 `npm i` 安装依赖
+1. 根目录 `npm i` 安装前端项目依赖
 2. `cd sailor-server` 进入服务端目录
 
 -   `npm i` 安装服务端依赖
 -   将根目录文件`package.json`的`scripts.dev`的`MONGODB_USER`和`MONGODB_PASSWORD`修改为为本地 mongodb 的用户名和密码（db sailor）
--   `npm run dev` 开发启动
+-   `npm run dev` 开发启动后端
 
-3. 根目录 `npm run dev` 编译前端
-4. 根目录 `npm run client:start` 启动前端，http://localhost:8082/
+3. 根目录 `npm run fis3:release` 编译前端代码
+4. 根目录 `npm run client:start` 启动前端，成功后访问：http://localhost:8082/
 
 ## TODO List
 
